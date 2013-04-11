@@ -1,13 +1,6 @@
 /**
  * @author Michael Boyd
  * 
- * 
- *
- * 
- *
- * 
- *
- * 
  */
 
 var initialize = function(){
