@@ -1,0 +1,93 @@
+#Container {
+   display: inline-block;
+}
+
+.cardPlayer {
+   margin-top: 15px;
+   padding-bottom: 5px;
+   border-bottom: 1px solid black;
+}
+
+.cardPlayer div {
+   display: inline;
+}
+
+div.playerInfo {
+   width: 120px;
+   vertical-align: top;
+   display: inline-block;
+}
+
+.playerInfo div {
+   display: inline-block;
+   vertical-align: middle;
+}
+
+.playerName {
+}
+
+div.playerTurn {
+   display: block;
+}
+
+#PlayersContainer {
+   margin-top: 10px;
+}
+
+#GameResultsContainer {
+   margin-top: 10px;
+   display: inline;
+}
+
+.dealer.Show {
+   margin-left: 5px;
+   background-color: #8CDD81;
+}
+
+.status {
+   margin-left: 5px;
+   text-color: black;
+}
+
+.Pres {
+   background-color: #0000FF;
+}
+
+.vicePres {
+   background-color: #8FD8D8; 
+}
+
+.viceScum {
+   background-color: #F08080;
+}
+
+.Scum {
+   background-color: #FF0000;
+}
+
+.hand {
+   height: 80px;
+   width: 900px;
+   display: inline-block;
+}
+
+.CardImage {
+   height: 70px;
+   width: 60px;
+   border: 1px solid gray;
+   margin-left: 5px;
+}
+
+/*
+.CardImage:hover {
+   -webkit-transform: translate(0px,-10px);
+}
+*/
+
+.selectedCard {
+   -webkit-transform: translate(0px,-10px);
+   border: 2px solid green;
+   margin: -1px -1px -1px 4px;
+}
+
+
