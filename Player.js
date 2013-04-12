@@ -11,6 +11,9 @@
 * Licensed under LGPL 3 - www.gnu.org/copyleft/lesser.html
 */
 
+/**
+ * Player Object used in CardGame
+ */
 var Player = function(name,isComp,isDealer){
    this.dealer = false;
    this.hand = [];
@@ -88,13 +91,18 @@ var Player = function(name,isComp,isDealer){
    playContainer.appendChild(cardPlayer);
 }
 
+/**
+ * Sort players cards in hand after deal
+ */
 Player.prototype.sortHand = function(){
    this.hand.sort(function(a,b){
       return (a.value - b.value)
    });
 }
 
-
+/**
+ * Displays cards in player's hand
+ */
 Player.prototype.displayCards = function(isStart){
    for(var i = 0; i < this.hand.length; i++){
       this.handContainer.appendChild(this.hand[i].node);
@@ -109,6 +117,9 @@ Player.prototype.displayCards = function(isStart){
    }
 }
 
+/**
+ * Displays back of card image and counter for computer players
+ */
 Player.prototype.displayCompCards = function(isStart){
    if(isStart){
       var cardImg = document.createElement("img");
@@ -125,6 +136,9 @@ Player.prototype.displayCompCards = function(isStart){
    }
 }
 
+/**
+ * Deck object to create cards in deck
+ */
 var createDeck = function(){
    var cardValues = [3,4,5,6,7,8,9,10,11,12,13,14,15];
    var cardSuits = ['clubs','diamonds','hearts','spades'];
@@ -136,6 +150,9 @@ var createDeck = function(){
    }
 }
 
+/**
+ * Card Object
+ */
 var Card = function(val, suit){                                              
    this.value = val;                                                         
    this.suit = suit;                                                         
@@ -147,6 +164,10 @@ var Card = function(val, suit){
    this.node = cardImg;                                   
 }
 
+/**
+ * Card event to toggle selection
+ * of card to be played in trick
+ */
 Card.prototype.selectCard = function(cardImg){
    if($(cardImg).hasClass("selectedCard")){
       $(cardImg).removeClass("selectedCard"); 

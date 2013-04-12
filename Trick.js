@@ -3,6 +3,9 @@
  *
  */
 
+/**
+ * Trick Object used in CardGame
+ */
 var Trick = function(cards,player){
    this.node = document.getElementById("TrickContainer");
    this.header = document.getElementById("trickHeader");
@@ -14,6 +17,10 @@ var Trick = function(cards,player){
    this.setValues(cards,player);
 }
 
+/**
+ * Initializes trick properties at the beginning
+ * of each new trick
+ */
 Trick.prototype.setValues = function(cards,player){
    for(var i = 0; i < cards.length; i++){
       this.hand.push(cards[i]);
@@ -30,6 +37,9 @@ Trick.prototype.setValues = function(cards,player){
    this.trickLabel.innerHTML = "Trick Rule - "+this.rule;
 }
 
+/**
+ * Validates the firstHand played in trick
+ */
 Trick.prototype.validate = function(){
    if(this.rule != "" && this.hand.length > 1){
       var val = this.hand[0].value;
@@ -47,6 +57,11 @@ Trick.prototype.validate = function(){
    return false;
 }
 
+/**
+ * Checks to see if cards attempting to be played are valid
+ * Valid is defined as following the rule and greater than
+ * the last card(s) played in trick
+ */
 Trick.prototype.isValid = function(cards,player){
    if(this.rule == "Singles"){
       if(cards.length == 1){

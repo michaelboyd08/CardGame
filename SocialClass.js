@@ -1,12 +1,30 @@
 /**
  * @author Michael Boyd
  * 
+ * Social Class Card Game Application
+ * This is a single player prototype of the card game Social Class.
+ * The name of this game has many aliases including Scum, Kings, 
+ * Presidents.
+ *
+ * 3/12/13 - Player can only play singles. More rules/expanded 
+ *           functionality will come soon.
+ * 
  */
 
+/**
+ * Initialize CardGame Object
+ */
 var initialize = function(){
    new CardGame();
 }
 
+/**
+ * CardGame Object
+ * 
+ * Main object reference. Attachs event handlers for UI buttons:
+ * Add Player, Start Game, and Next Trick.
+ * Maintains references to player and trick objects throughout game
+ */
 var CardGame = function(){
    this.players = [];
    this.tempPlayers = [];
@@ -23,47 +41,53 @@ var CardGame = function(){
    this.nextTrick.disabled = true;
 
    // Start Game Button
-   // Shuffles the deck 3 times, deals cards, and sorts players hands
+   // Shuffles the deck 5 times, deals cards, and sorts players hands
    // Display Cards for Human and Computer Players
    $("#startGame").click({context: this}, function(e){
       var this_ptr = e.data.context;
       var players = this_ptr.players;
-      this_ptr.startGameBtn.disabled = true;
-      this_ptr.addPlayerBtn.disabled = true;
-      this_ptr.results = 1;
-      this_ptr.isGameStarted = true;
 
-      // Shuffle deck 3 times
-      for(var i = 0; i < 5; i++){
-         this_ptr.shuffleCards();
-      }
-      // Deal out cards
-      this_ptr.dealCards();
-      for(var j = 0; j < players.length; j++){
-         players[j].sortHand();
-         if(!players[j].isComp){
-            players[j].play.disabled = false;
-            players[j].pass.disabled = false;
-            if(this_ptr.isFirstGame){
-               players[j].displayCards(true);
-            }else{
-               players[j].displayCards(false);
-            }
-         }else{
-            if(this_ptr.isFirstGame){
-               players[j].displayCompCards(true);
-               players[j].displayCards(true);
-            }else{
-               players[j].displayCompCards(false);
-               players[j].displayCards(false);
-            }
+      // Verify players have been created
+      if(players.length > 3 && players.length <= 7){
+         this_ptr.startGameBtn.disabled = true;
+         this_ptr.addPlayerBtn.disabled = true;
+         this_ptr.results = 1;
+         this_ptr.isGameStarted = true;
+
+         // Shuffle deck 5 times
+         for(var i = 0; i < 5; i++){
+            this_ptr.shuffleCards();
          }
-         players[j].playedCard = false;
-         players[j].passHand = false;
-         players[j].result = -1;
+         // Deal out cards
+         this_ptr.dealCards();
+         for(var j = 0; j < players.length; j++){
+            players[j].sortHand();
+            if(!players[j].isComp){
+               players[j].play.disabled = false;
+               players[j].pass.disabled = false;
+               if(this_ptr.isFirstGame){
+                  players[j].displayCards(true);
+               }else{
+                  players[j].displayCards(false);
+               }
+            }else{
+               if(this_ptr.isFirstGame){
+                  players[j].displayCompCards(true);
+                  //players[j].displayCards(true);
+               }else{
+                  players[j].displayCompCards(false);
+                  //players[j].displayCards(false);
+               }
+            }
+            players[j].playedCard = false;
+            players[j].passHand = false;
+            players[j].result = -1;
+         }
+         this_ptr.isFirstGame = false;
+         this_ptr.startGame();
+      }else{
+         alert("Min Players is 4, Max is 7 - Add More Players/Click Refresh");
       }
-      this_ptr.isFirstGame = false;
-      this_ptr.startGame();
    });
 
    // Attach add player to enter key
@@ -107,6 +131,12 @@ var CardGame = function(){
 
 }
 
+/**
+ * Begins the game after players have been added.
+ * Reveals Players and Trick Container.
+ * Attachs event handler for human player UI buttons: Play & Pass
+ *
+ */
 CardGame.prototype.startGame = function(){
    this.firstHand = true;
    var this_ptr = this;
@@ -130,16 +160,6 @@ CardGame.prototype.startGame = function(){
                      this_ptr.clearTrick();
                   }else{
                      this_ptr.automatePlay(1,false);
-                     /*
-                     this_ptr.autoPlayComp(1);
-                     if(!this_ptr.isValidPlayers()){
-                        this_ptr.clearTrick(true);
-                     }else{
-                        // Player still has cards left
-                        player.play.disabled = false;
-                        player.pass.disabled = false;
-                     }
-                     */
                   }
                }
             }
@@ -158,20 +178,16 @@ CardGame.prototype.startGame = function(){
             //$(player.node).addClass("passedHand");
             $(player.turn).removeClass("Show");
             this_ptr.automatePlay(1,true);
-            /*
-            while(this_ptr.isValidPlayers()){
-               if(!this_ptr.autoPlayComp(1)){
-                  break;
-               }
-            }
-            this_ptr.clearTrick(false);
-            */
          });
       }
    }
 }
 
+/**
+ * Automates play for computer players
+ */
 CardGame.prototype.automatePlay = function(idx,isPassed){
+   //TODO: Fix issue here at the end of game stalling
    if(isPassed){
       while(this.isValidPlayers()){
          if(!this.autoPlayComp(idx)){
@@ -197,6 +213,9 @@ CardGame.prototype.automatePlay = function(idx,isPassed){
    }
 }
 
+/**
+ * Checks and validates if a more than on player can play/pass
+ */
 CardGame.prototype.isValidPlayers = function(){
    var validPlayers = 0;
    var lastPlayedIndex = 0;
@@ -214,6 +233,10 @@ CardGame.prototype.isValidPlayers = function(){
    }
 }
 
+/**
+ * Clears the trick. Removes cards from trick container
+ * and resets players/trick properties
+ */
 CardGame.prototype.clearTrick = function(isPlayerTurn){
    for(var i = 0; i < this.cardTrick.container.children.length; i++){
       this.cardTrick.container.removeChild(this.cardTrick.container.children[i]);
@@ -239,7 +262,8 @@ CardGame.prototype.clearTrick = function(isPlayerTurn){
          if(this.players[j].result < 0){
             this.players[j].result = this.results;
             for(var k = 0; k < this.players[j].hand.length; k++){
-               this.players[j].handContainer.removeChild(this.players[j].hand[k].node);
+               // Turn on for debugging on if comp cards displayed
+               //this.players[j].handContainer.removeChild(this.players[j].hand[k].node);
                this.players[j].hand.splice(k,1);
                k--;
             }
@@ -253,6 +277,9 @@ CardGame.prototype.clearTrick = function(isPlayerTurn){
    }
 }
 
+/**
+ * Initiate Trick. Player who won last trick leads
+ */
 CardGame.prototype.startTrick = function(){
    this.nextTrick.disabled = true;
    this.cardTrick.cleared.innerHTML = "";
@@ -301,44 +328,16 @@ CardGame.prototype.startTrick = function(){
       }else{
          this.automatePlay(index,false);
       }
-      /*
-      //alert("Computer Start Trick");
-      // Program AI here
-      cards.push(this.players[index].hand[0]);
-      this.cardTrick.setValues(cards,this.players[index]);
-      this.autoPlayComp(index);
-      // check for player out automate rest tricks
-      if(this.players[0].result > 0){
-         while(this.isValidPlayers()){
-               this.autoPlayComp(1);
-            }
-            this.clearTrick(false);
-      }else{
-         this.players[0].play.disabled = false;
-         this.players[0].pass.disabled = false;
-      }
-      */
    }else{
       this.players[index].play.disabled = false;
       this.players[index].pass.disabled = false;
       $(this.players[index].turn).addClass("Show");
-      /*
-      //alert("Start Trick");
-
-      // Check for player out
-      if(this.players[index].result > 0){
-         while(this.isValidPlayers()){
-               this.autoPlayComp(1);
-            }
-            this.clearTrick(false);
-      }else{
-         this.players[index].play.disabled = false;
-         this.players[index].pass.disabled = false;
-      }
-      */
    }
 }
 
+/**
+ * Automated card playing for computer player
+ */
 CardGame.prototype.autoPlayComp = function(index){
    for(var i = index; i < this.players.length; i++){
       $(this.players[i].turn).addClass("Show");
@@ -355,14 +354,11 @@ CardGame.prototype.autoPlayComp = function(index){
       }   
    }
    return true;
-   /*
-   // Get rid of hard code
-   if(!this.players[0].passHand){
-      $(this.players[0].turn).addClass("Show");
-   }
-   */
 }
 
+/**
+ * Computer player tries to play a valid card
+ */
 CardGame.prototype.compPlayCardsInTrick = function(player){
    var cards = [];
    var idxs = [];
@@ -401,6 +397,9 @@ CardGame.prototype.compPlayCardsInTrick = function(player){
    }
 }
 
+/**
+ * Human players tries to play a valid card in trick
+ */
 CardGame.prototype.playCardsInTrick = function(player){
    var cards = [];
    var cardIdxs = [];
@@ -425,28 +424,9 @@ CardGame.prototype.playCardsInTrick = function(player){
    }
 }
 
-/*
-CardGame.prototype.playCompHand = function(player,cards,cardIdxs){
-   for(var i = 0; i < cards.length; i++){
-      if(this.firstHand){
-         $(cards[i].node).addClass("firstCard");
-         this.firstHand = false;
-      }else{
-         $(cards[i].node).addClass("playedCard");
-      }
-      this.cardTrick.container.appendChild(cards[i].node);
-      player.hand.splice(cardIdxs[i],1);
-      $(player.turn).removeClass("Show");
-
-      // Comp finished playing cards in hand
-      if(player.hand.length == 0){
-         alert("comp out");
-         player.result = this.results++;
-      }
-   }
-}
-*/
-
+/**
+ * Player has valid cards to play in trick. Plays valid cards
+ */
 CardGame.prototype.playHand = function(player,cards,cardIdxs,isComp){
    for(var i = 0; i < cards.length; i++){
       if(!isComp){
@@ -476,6 +456,9 @@ CardGame.prototype.playHand = function(player,cards,cardIdxs,isComp){
    }
 }
 
+/**
+ * Debugging functions to validate and show shuffle
+ */
 CardGame.prototype.createContainer = function(){
    var j = 0;
    for(var i = 0; i < this.deck.cards.length; i++){
@@ -491,6 +474,9 @@ CardGame.prototype.createContainer = function(){
    }
 }
 
+/**
+ * Debugging functions to validate and show shuffle
+ */
 CardGame.prototype.displayShuffle = function(){
    var j = 0;
    var i = 0;
@@ -510,7 +496,10 @@ CardGame.prototype.displayShuffle = function(){
    }
 }
 
-
+/**
+ * Shuffle cards in deck using the 
+ * Fisher-Yates shuffling Algorithm
+ */
 CardGame.prototype.shuffleCards = function(){
    var i = this.deck.cards.length, j, tempi, tempj;
    if(i == 0) return false;
@@ -523,6 +512,10 @@ CardGame.prototype.shuffleCards = function(){
    }
 }
 
+/**
+ * Deal out cards to each player.
+ * Begins with dealer
+ */
 CardGame.prototype.dealCards = function(){
    var j = 0;
    for(var i = 0; i < this.deck.cards.length; i++){
