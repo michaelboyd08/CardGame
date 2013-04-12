@@ -93,6 +93,8 @@ var Player = function(name,isComp,isDealer){
 
 /**
  * Sort players cards in hand after deal
+ * Cards sorted in numerical order from 3-10
+ * then Jack, Queen, King, Ace, Two
  */
 Player.prototype.sortHand = function(){
    this.hand.sort(function(a,b){
