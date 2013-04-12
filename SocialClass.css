@@ -129,7 +129,11 @@ div.currentTurn.Show {
    margin-left: 2px;
 }
 
-#nextTrick.highLight {
+#nextTrickContainer {
+   display: inline-block;
+}
+
+#nextTrickContainer.highLight {
    border: 2px solid green;
-   border-radius: 3px;
+   border-radius: 3px;   
 }

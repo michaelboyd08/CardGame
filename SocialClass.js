@@ -1,6 +1,13 @@
 /**
  * @author Michael Boyd
  * 
+ * 
+ *
+ * 
+ *
+ * 
+ *
+ * 
  */
 
 var initialize = function(){
@@ -164,14 +171,14 @@ CardGame.prototype.clearTrick = function(isPlayerTurn){
       // Program AI rule
       this.cardTrick.rule = "single";
       this.nextTrick.disabled = false;
-      $(this.nextTrick).addClass("highLight");
+      $("#nextTrickContainer").addClass("highLight");
       //this.startTrick();
    }
 }
 
 CardGame.prototype.startTrick = function(){
    this.nextTrick.disabled = true;
-   $(this.nextTrick).removeClass("highLight");
+   $("#nextTrickContainer").removeClass("highLight");
    var index = 0;
    var cards = [];
    for(var i = 0; i < this.players.length; i++){
