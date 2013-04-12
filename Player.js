@@ -1,5 +1,11 @@
 /**
-* PNG Card Images
+ * @author Michael Boyd
+ *
+ */
+
+/**
+* PNG Card Images provided by:
+*
 * Vectorized Playing Cards 1.3- http://code.google.com/p/vectorized-playing-cards/
 * Copyright 2011 - Chris Aguilar
 * Licensed under LGPL 3 - www.gnu.org/copyleft/lesser.html
@@ -59,6 +65,7 @@ var Player = function(name,isComp,isDealer){
    this.handContainer = handContainer;
    this.compContainer = compContainer;
    this.turn = currentTurn;
+   this.playedCard = false;
 
    this.passHand = false;
    this.result = -1;
@@ -88,26 +95,34 @@ Player.prototype.sortHand = function(){
 }
 
 
-Player.prototype.displayCards = function(){
+Player.prototype.displayCards = function(isStart){
    for(var i = 0; i < this.hand.length; i++){
       this.handContainer.appendChild(this.hand[i].node);
-      $(this.hand[i].node).click({context: this.hand[i]}, function(e){
-         var this_ptr = e.data.context;
-         this_ptr.selectCard(this);   
-      });
+      if(isStart){
+         $(this.hand[i].node).click({context: this.hand[i]}, function(e){
+            var this_ptr = e.data.context;
+            this_ptr.selectCard(this);   
+         });
+      }else{
+         this.hand[i].node.className = "CardImage";
+      }
    }
 }
 
-Player.prototype.displayCompCards = function(){
-   var cardImg = document.createElement("img");
-   cardImg.className = "CardImage";
-   cardImg.src = "PNG_Cards/Red_Back.png";
-   var cardCounter = document.createElement("div");
-   cardCounter.className = "CardCounter";
-   cardCounter.innerHTML = "x "+this.hand.length;
-   this.counter = cardCounter;
-   this.compContainer.appendChild(cardImg);
-   this.compContainer.appendChild(cardCounter);
+Player.prototype.displayCompCards = function(isStart){
+   if(isStart){
+      var cardImg = document.createElement("img");
+      cardImg.className = "CardImage";
+      cardImg.src = "PNG_Cards/Red_Back.png";
+      var cardCounter = document.createElement("div");
+      cardCounter.className = "CardCounter";
+      cardCounter.innerHTML = "x "+this.hand.length;
+      this.counter = cardCounter;
+      this.compContainer.appendChild(cardImg);
+      this.compContainer.appendChild(cardCounter);
+   }else{
+      this.counter.innerHTML = "x "+this.hand.length;
+   }
 }
 
 var createDeck = function(){

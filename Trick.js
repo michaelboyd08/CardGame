@@ -1,5 +1,14 @@
+/**
+ * @author Michael Boyd
+ *
+ */
+
 var Trick = function(cards,player){
    this.node = document.getElementById("TrickContainer");
+   this.header = document.getElementById("trickHeader");
+   this.cleared = document.getElementById("trickClear");
+   this.trickLabel = document.getElementById("trickLabel");
+   this.container = document.getElementById("trickCards");
    this.hand = [];
    this.rule = "";
    this.setValues(cards,player);
@@ -10,14 +19,15 @@ Trick.prototype.setValues = function(cards,player){
       this.hand.push(cards[i]);
    }
    if(this.hand.length == 1){
-      this.rule = "single";
+      this.rule = "Singles";
    }else if(this.hand.length == 2){
-      this.rule = "pairs";
+      this.rule = "Pairs";
    }else if(this.hand.length == 4){
-      this.rule = "quads";
+      this.rule = "Quads";
    }
    this.isValidCard = this.validate();
    this.lastPlayed = player;
+   this.trickLabel.innerHTML = "Trick Rule - "+this.rule;
 }
 
 Trick.prototype.validate = function(){
@@ -38,17 +48,22 @@ Trick.prototype.validate = function(){
 }
 
 Trick.prototype.isValid = function(cards,player){
-   if(this.rule == "single"){
+   if(this.rule == "Singles"){
       if(cards.length == 1){
          if(this.hand[0].value < cards[0].value){
             this.hand[0] = cards[0];
             this.lastPlayed = player;
             return true;
+         }else{
+            // Invalid Card - unselect and put back in hand
+            if(!player.isComp){
+               $(cards[0].node).removeClass("selectedCard");
+            }
          }
       }
-   }else if(this.rule == "pairs"){
+   }else if(this.rule == "Pairs"){
 
-   }else if(this.rule == "quads"){
+   }else if(this.rule == "Quads"){
 
    }
 
