@@ -11,9 +11,14 @@
       <div id="Container">
          <div id="ConfigArea">
             <div id="GameTitle">Social Class Card Game</div>
-            <input id="inputName" type="text" />
-            <input id="addPlayer" type="button" value="Add Player" />
-            <input id="startGame" type="button" value="Start Game" />
+            <div id="UserButtons">
+               <input id="inputName" type="text" />
+               <input id="addPlayer" type="button" value="Add Player" />
+               <input id="startGame" type="button" value="Start Game" />
+               <div id="nextTrick">
+                  <input id="nextTrickBtn" type="button" value="Next Trick" />
+               </div>
+            </div>
          </div>
          <div id="GameContainer">
             <div id="PlayersContainer" class="ShowLine"></div>
@@ -21,9 +26,6 @@
                <div id="trickHeader">
                   <div id="trickLabel" class="ShowLine">Trick Rule</div>
                   <div id="trickClear" class="ShowLine"></div>
-                  <div id="nextTrickContainer" class="ShowLine">
-                     <input id="nextTrick" type="button" value="Next Trick" />
-                  </div>
                </div>
                <div id="trickCards"></div>
             </div>

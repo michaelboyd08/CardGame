@@ -108,14 +108,10 @@ Player.prototype.sortHand = function(){
 Player.prototype.displayCards = function(isStart){
    for(var i = 0; i < this.hand.length; i++){
       this.handContainer.appendChild(this.hand[i].node);
-      if(isStart){
-         $(this.hand[i].node).click({context: this.hand[i]}, function(e){
-            var this_ptr = e.data.context;
-            this_ptr.selectCard(this);   
-         });
-      }else{
-         this.hand[i].node.className = "CardImage";
-      }
+      $(this.hand[i].node).click({context: this.hand[i]}, function(e){
+         var this_ptr = e.data.context;
+         this_ptr.selectCard(this);   
+      });
    }
 }
 
@@ -163,7 +159,16 @@ var Card = function(val, suit){
    var cardImg = document.createElement("img");
    cardImg.className = "CardImage";
    cardImg.src = "PNG_Cards/"+this.image;
-   this.node = cardImg;                                   
+   this.node = cardImg;
+   
+   // Save possibly for multi player, 
+   // every card will be played (clicked)
+   /*
+   $(this.node).click({context: this}, function(e){
+      var this_ptr = e.data.context;
+      this_ptr.selectCard(this_ptr.node);   
+   });
+   */
 }
 
 /**

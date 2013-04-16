@@ -40,18 +40,10 @@ Trick.prototype.setValues = function(cards,player){
 /**
  * Validates the firstHand played in trick
  */
+
+ // Need re-write for invalid rule type
 Trick.prototype.validate = function(){
-   if(this.rule != "" && this.hand.length > 1){
-      var val = this.hand[0].value;
-      var isValid = true;
-      for(var i = 0; i < this.hand.length; i++){
-         if(val != this.hand[i].value){
-            isValid = false;
-            break;
-         }
-      }
-      return isValid;
-   }else if(this.rule != ""){
+   if(this.rule != "" && this.hand.length == 1){
       return true;
    }
    return false;
