@@ -54,6 +54,14 @@ var Player = function(name,isComp,isDealer){
    currentTurn.className = "currentTurn";
    currentTurn.innerHTML = "Turn";
 
+   var handStatus = document.createElement("div");
+   handStatus.className = "handStatus";
+   handStatus.innerHTML = "Passed";
+
+   var trickStatus = document.createElement("div");
+   trickStatus.className = "playerTrickStatus";
+   trickStatus.innerHTML = "OUT";
+
    var handContainer = document.createElement("div");
    handContainer.className = "hand";
    var compContainer = document.createElement("div");
@@ -68,6 +76,8 @@ var Player = function(name,isComp,isDealer){
    this.handContainer = handContainer;
    this.compContainer = compContainer;
    this.turn = currentTurn;
+   this.handStatus = handStatus;
+   this.trickStatus = trickStatus;
    this.playedCard = false;
 
    this.passHand = false;
@@ -80,9 +90,14 @@ var Player = function(name,isComp,isDealer){
    if(!isComp){
       playerInfo.appendChild(playerPlay);
       playerInfo.appendChild(playerPass);
+      playerInfo.appendChild(handStatus);
+      playerInfo.appendChild(trickStatus);
+      cardPlayer.appendChild(playerInfo);
    }
-   cardPlayer.appendChild(playerInfo);
    if(isComp){
+      playerInfo.appendChild(handStatus);
+      playerInfo.appendChild(trickStatus);
+      cardPlayer.appendChild(playerInfo);
       cardPlayer.appendChild(compContainer);
    }
    cardPlayer.appendChild(handContainer);
@@ -98,7 +113,7 @@ var Player = function(name,isComp,isDealer){
  */
 Player.prototype.sortHand = function(){
    this.hand.sort(function(a,b){
-      return (a.value - b.value)
+      return (a.val - b.val)
    });
 }
 
@@ -152,7 +167,7 @@ var createDeck = function(){
  * Card Object
  */
 var Card = function(val, suit){                                              
-   this.value = val;                                                         
+   this.val = val;                                                         
    this.suit = suit;                                                         
    this.image = ""+val+"_of_"+suit+".png";
 

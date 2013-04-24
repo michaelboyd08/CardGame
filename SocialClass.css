@@ -80,9 +80,7 @@ body {
 .cardPlayer {
    margin-top: 15px;
    padding-bottom: 5px;
-   /*
-   border-bottom: 1px solid black;
-   */
+   height: 70px;
 }
 
 .cardPlayer div {
@@ -190,6 +188,24 @@ div.currentTurn {
 div.currentTurn.Show {
    display: inline-block;
    margin-left: 2px;
+}
+
+div.handStatus {
+   display: none;
+   color: red;
+}
+
+div.handStatus.Show {
+   display: block;
+}
+
+div.playerTrickStatus {
+   display: none;
+   color: red;
+}
+
+div.playerTrickStatus.Show {
+   display: block;
 }
 
 #nextTrick {

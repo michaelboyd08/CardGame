@@ -9,11 +9,15 @@
  * 3/12/13 - Player can only play singles. More rules/expanded 
  *           functionality will come soon.
  * 
+ * 4/23/13 - Player can play single, pairs, and quads.
+ *
  */
 
 /**
  * Initialize CardGame Object
  */
+var DEBUG_MODE = true;
+var DEBUG_DEAL = false;
 var initialize = function(){
    new CardGame();
 }
@@ -29,7 +33,8 @@ var CardGame = function(){
    this.players = [];
    this.tempPlayers = [];
    //var this_ptr = this;
-   this.deck = new createDeck();   
+   this.deck = new createDeck();
+   this.cardTrick = new Trick(0,0);
    this.shuffleContainer = document.getElementById("displayDeck");
    //this.createContainer();
    this.isGameStarted = false;
@@ -56,13 +61,29 @@ var CardGame = function(){
          this_ptr.results = 1;
          this_ptr.isGameStarted = true;
 
-         // Shuffle deck 5 times
-         for(var i = 0; i < 5; i++){
-            this_ptr.shuffleCards();
+         if(!DEBUG_DEAL){
+            // Shuffle deck 5 times
+            for(var i = 0; i < 5; i++){
+               this_ptr.shuffleCards();
+            }
+            // Deal out cards
+            this_ptr.dealCards();
+         }else{
+            var cardValues1 = [7,7,9,9,11,11];
+            var cardValues2 = [4,4,8,9,10,11];
+            var cardValues3 = [12];
+            var cardValues4 = [4,10];
+            var values = [];
+            values.push(cardValues1);
+            values.push(cardValues2);
+            values.push(cardValues3);
+            values.push(cardValues4);
+            var suits = ['clubs','diamonds','hearts','spades'];
          }
-         // Deal out cards
-         this_ptr.dealCards();
          for(var j = 0; j < players.length; j++){
+            if(DEBUG_DEAL){
+               this_ptr.debugDeal(values[j],suits[j],players[j]);
+            }
             players[j].sortHand();
             if(!players[j].isComp){
                players[j].play.disabled = false;
@@ -75,17 +96,22 @@ var CardGame = function(){
             }else{
                if(this_ptr.isFirstGame){
                   players[j].displayCompCards(true);
-                  //players[j].displayCards(true);
+                  if(DEBUG_MODE){
+                     players[j].displayCards(true);
+                  }
                }else{
                   players[j].displayCompCards(false);
-                  //players[j].displayCards(false);
+                  if(DEBUG_MODE){
+                     players[j].displayCards(false);
+                  }
                }
             }
+            $(players[j].trickStatus).removeClass("Show");
+            players[j].trickStatus.innerHTML = "OUT";
             players[j].playedCard = false;
             players[j].passHand = false;
             players[j].result = -1;
          }
-         this_ptr.isFirstGame = false;
          this_ptr.startGame();
       }else{
          alert("Min Players is 4, Max is 7 - Add More Players/Click Refresh");
@@ -141,6 +167,8 @@ var CardGame = function(){
  */
 CardGame.prototype.startGame = function(){
    this.firstHand = true;
+   this.playersOut = 0;
+   this.passedHands = 0;
    var this_ptr = this;
    $("#TrickContainer").addClass("Show");
    for(var i = 0; i < this.players.length; i++){
@@ -150,37 +178,42 @@ CardGame.prototype.startGame = function(){
          $(this.players[i].turn).addClass("Show");
          $(this.nextTrick).addClass("Show");
          // Play card in trick
-         $(this.players[i].play).click({context: this_ptr, player: this.players[i]}, function(e){
-            var this_ptr = e.data.context;
-            var player = e.data.player;
-            if(!e.data.player.isComp){
-               this_ptr.playCardsInTrick(player);
-               if(player.playedCard){
-                  player.playedCard = false;
-                  // Clear trick on player going out
-                  if(player.result > 0){
-                     this_ptr.clearTrick();
-                  }else{
-                     this_ptr.automatePlay(1,false);
+         if(this.isFirstGame){
+            console.log("Play and Pass Attached");
+            $(this.players[i].play).click({context: this_ptr, player: this.players[i]}, function(e){
+               var this_ptr = e.data.context;
+               var player = e.data.player;
+               if(!e.data.player.isComp){
+                  this_ptr.playCardsInTrick(player);
+                  if(player.playedCard){
+                     player.playedCard = false;
+                     // Clear trick on player going out
+                     if(player.result > 0){
+                        this_ptr.clearTrick();
+                     }else{
+                        this_ptr.automatePlay(1,false);
+                     }
                   }
                }
-            }
-         });
+            });
 
-         // Pass during trick
-         $(this.players[i].pass).click({context: this_ptr, player: this.players[i]}, function(e){
-            var this_ptr = e.data.context;
-            var player = e.data.player;
-            
-            // clean up references
-            player.playedCard = false;
-            player.passHand = true;
-            player.play.disabled = true;
-            player.pass.disabled = true;
-            //$(player.node).addClass("passedHand");
-            $(player.turn).removeClass("Show");
-            this_ptr.automatePlay(1,true);
-         });
+            // Pass during trick
+            $(this.players[i].pass).click({context: this_ptr, player: this.players[i]}, function(e){
+               var this_ptr = e.data.context;
+               var player = e.data.player;
+               
+               // clean up references
+               this_ptr.passedHands++;
+               player.playedCard = false;
+               player.passHand = true;
+               player.play.disabled = true;
+               player.pass.disabled = true;
+               $(player.handStatus).addClass("Show");
+               $(player.turn).removeClass("Show");
+               this_ptr.automatePlay(1,true);
+            });
+         }
+         this.isFirstGame = false;
       }
    }
 }
@@ -190,23 +223,29 @@ CardGame.prototype.startGame = function(){
  */
 CardGame.prototype.automatePlay = function(idx,isPassed){
    //TODO: Fix issue here at the end of game stalling
+   console.log("in automatePlay");
    if(isPassed){
+      console.log("passed");
       while(this.isValidPlayers()){
-         if(!this.autoPlayComp(idx)){
+         if(!this.autoPlayComp(idx,1)){
             // Comp player went out
             break;
          }else{
-            idx = 0;
+            idx = 1;
          }
       }
       this.clearTrick();
    }else{
-      if(!this.autoPlayComp(idx)){
+      console.log("not passed");
+      if(!this.autoPlayComp(idx,0)){
          this.clearTrick();
       }else{
+         console.log("human play");
          // Hard Code Human
          // Human still can play
          if(this.isValidPlayers()){
+            console.log("human cards left: "+this.players[0].hand.length);
+            console.log("human results: "+this.players[0].result);
             this.players[0].play.disabled = false;
             this.players[0].pass.disabled = false;
             $(this.players[0].turn).addClass("Show");
@@ -227,12 +266,15 @@ CardGame.prototype.isValidPlayers = function(){
       if(!this.players[i].passHand && (this.players[i].result < 0)){
          validPlayers++;
          lastPlayedIndex = i;
+         console.log("valid player: "+this.players[i].name.innerHTML);
       }
    }
    if(validPlayers > 1){
+      console.log("valid players true");
       return true;
    }else{
       $(this.players[lastPlayedIndex].turn).addClass("Show");
+      console.log("valid players FALSE");
       return false;
    }
 }
@@ -271,11 +313,17 @@ CardGame.prototype.clearTrick = function(isPlayerTurn){
       for(var j = 0; j < this.players.length; j++){
          if(this.players[j].result < 0){
             this.players[j].result = this.results;
+            this.players[j].trickStatus.innerHTML += " - "+this.players[j].result;
+            $(this.players[j].trickStatus).addClass("Show");
             for(var k = 0; k < this.players[j].hand.length; k++){
-               // Turn on for debugging on if comp cards displayed
+               if(DEBUG_MODE){
+                  $(this.players[j].hand[k].node).off("click");
+                  this.players[j].handContainer.removeChild(this.players[j].hand[k].node);
+               }else{
                if(!this.players[j].isComp){
                   $(this.players[j].hand[k].node).off("click");
-                  //this.players[j].handContainer.removeChild(this.players[j].hand[k].node);
+                  this.players[j].handContainer.removeChild(this.players[j].hand[k].node);
+               }
                }
                this.players[j].hand.splice(k,1);
                k--;
@@ -307,6 +355,10 @@ CardGame.prototype.startTrick = function(){
    var index = 0;
    var cards = [];
    var isPlayerOut = false;
+   // Looks to decide which player will begin next trick
+   // Either last played or next player in turn if last
+   // played went out on previous turn
+   console.log("Last Played/Won Trick: "+this.cardTrick.lastPlayed.name.innerHTML);
    for(var i = 0; i < this.players.length; i++){
       if(isPlayerOut){
          if(this.players[i].result < 0){
@@ -318,6 +370,7 @@ CardGame.prototype.startTrick = function(){
             // Check if player is out
             if(this.players[i].result > 0){
                isPlayerOut = true;
+               this.playersOut++;
                if(i == this.players.length-1){
                   i = -1;
                }
@@ -334,9 +387,16 @@ CardGame.prototype.startTrick = function(){
    for(var j = 0; j < this.players.length; j++){
       // Reset players info
       this.players[j].passHand = false;
+      $(this.players[j].handStatus).removeClass("Show");
    }
 
+   console.log("new trick");
+   this.passedHands = this.playersOut;
    if(this.players[index].isComp){
+      console.log("comp start");
+
+      // NOTE: Add here the AI for comp starting with highest possible
+      // IE: quads, pairs, singles
       cards.push(this.players[index].hand[0]);
       this.cardTrick.setValues(cards,this.players[index]);
       // If Human out, act like pass
@@ -346,6 +406,9 @@ CardGame.prototype.startTrick = function(){
          this.automatePlay(index,false);
       }
    }else{
+      console.log("human start");
+      console.log("human cards left: "+this.players[index].hand.length);
+      console.log("human results: "+this.players[index].result);
       this.players[index].play.disabled = false;
       this.players[index].pass.disabled = true;
       $(this.players[index].turn).addClass("Show");
@@ -355,20 +418,31 @@ CardGame.prototype.startTrick = function(){
 /**
  * Automated card playing for computer player
  */
-CardGame.prototype.autoPlayComp = function(index){
+CardGame.prototype.autoPlayComp = function(index,passedNum){
    for(var i = index; i < this.players.length; i++){
       $(this.players[i].turn).addClass("Show");
       //alert("comp turn");
+      console.log("Comp playing: "+this.players[i].name.innerHTML);
+      console.log("Comp passed hand: "+this.players[i].passHand);
+      console.log("Comp results: "+this.players[i].result);
+      console.log("Cards left: "+this.players[i].hand.length);
       if(this.players[i].isComp && !this.players[i].passHand && this.players[i].result < 0){
-         this.compPlayCardsInTrick(this.players[i]);
-         if(this.players[i].result > 0){
+         // Check to prevent player who already won trick from playing again
+         //$(this.players[i].turn).addClass("Show");
+         if(this.players[i] == this.cardTrick.lastPlayed && this.passedHands == this.players.length-1){
             return false;
+         }else{
+            this.compPlayCardsInTrick(this.players[i]);
+            if(this.players[i].result > 0){
+               return false;
+            }
          }
       }
       // Previously passed hand
       else{
+         console.log("comp prev passed");
          $(this.players[i].turn).removeClass("Show");
-      }   
+      }
    }
    return true;
 }
@@ -381,26 +455,32 @@ CardGame.prototype.compPlayCardsInTrick = function(player){
    var idxs = [];
    var isPass = true;
    for(var i = 0; i < player.hand.length; i++){
-      if(this.cardTrick.rule == "Singles"){
-         if(cards.length >= 1){
-            cards[0] = player.hand[i];
+      if(this.cardTrick.rule == "Singles" || this.cardTrick.rule == "Pairs" || 
+      this.cardTrick.rule == "Quads"){
+         if(this.cardTrick.rule != "Singles" && ((i == (player.hand.length-(this.cardTrick.hand.length-1))) || 
+         player.hand.length < this.cardTrick.hand.length)){
+            console.log("prevent index out of bounds break");
+            break;
          }else{
-            cards.push(player.hand[i]);
-         }
-         if(this.firstHand){
-            idxs.push(i);
-            player.counter.innerHTML = "x "+(player.hand.length-1);
-            this.playHand(player,cards,idxs,true);
-            isPass = false;
-            break;
-         }
-         else if(this.cardTrick.isValid(cards,player)){
-            // Extract card to be played
-            idxs.push(i);
-            player.counter.innerHTML = "x "+(player.hand.length-1);
-            this.playHand(player,cards,idxs,true);
-            isPass = false;
-            break;
+            // Push player hand onto cards array
+            for(var j = 0; j < this.cardTrick.hand.length; j++){
+               if(cards.length < this.cardTrick.hand.length){
+                  cards.push(player.hand[i+j]);
+                  idxs.push(i+j);
+               }else{
+                  cards[j] = player.hand[i+j];
+                  idxs[j] = i+j;
+               }
+            }
+
+            console.log("i: "+i);
+            // Try to play hand
+            if(this.firstHand || this.cardTrick.isValid(cards,player)){
+               player.counter.innerHTML = "x "+(player.hand.length-cards.length);
+               this.playHand(player,cards,idxs,true);
+               isPass = false;
+               break;
+            }
          }
       }
    }
@@ -409,8 +489,11 @@ CardGame.prototype.compPlayCardsInTrick = function(player){
    if(isPass){
       if(this.cardTrick.lastPlayed != player){
          player.passHand = true;
+         $(player.handStatus).addClass("Show");
       }
+      this.passedHands++;
       $(player.turn).removeClass("Show");
+      console.log("COMP PASSED HAND");
    }
 }
 
@@ -428,8 +511,8 @@ CardGame.prototype.playCardsInTrick = function(player){
    }
    // Create trick from first hand played
    if(this.firstHand){
-      this.cardTrick = new Trick(cards,player);
-      if(this.cardTrick.isValidCard){
+      this.cardTrick.setValues(cards,player);
+      if(this.cardTrick.isValidCards){
          this.playHand(player,cards,cardIdxs,false);
       }
    }else{
@@ -445,10 +528,17 @@ CardGame.prototype.playCardsInTrick = function(player){
  */
 CardGame.prototype.playHand = function(player,cards,cardIdxs,isComp){
    for(var i = 0; i < cards.length; i++){
-      if(!isComp){
+      // Turn off 'if statement' for debugging if comp cards displayed
+      if(DEBUG_MODE){
          cards[i].node.parentNode.removeChild(cards[i].node);
          $(cards[i].node).removeClass("selectedCard");
          $(cards[i].node).off("click");
+      }else{
+         if(!isComp){
+            cards[i].node.parentNode.removeChild(cards[i].node);
+            $(cards[i].node).removeClass("selectedCard");
+            $(cards[i].node).off("click");
+         }   
       }
       if(this.firstHand){
          $(cards[i].node).addClass("firstCard");
@@ -456,9 +546,18 @@ CardGame.prototype.playHand = function(player,cards,cardIdxs,isComp){
       }else{
          $(cards[i].node).addClass("playedCard");
       }
+
+      // Log cards played
+      console.log("cards played: "+cards[i].image);
       this.cardTrick.container.appendChild(cards[i].node);
-      player.hand.splice(cardIdxs[i],1);
+      //player.hand.splice(cardIdxs[i],1);
    }
+
+   // Remove cards from player array
+   for(var j = cardIdxs.length-1; j >= 0; j--){
+      player.hand.splice(cardIdxs[j],1);
+   }
+
    if(!isComp){
       player.play.disabled = true;
       player.pass.disabled = true;
@@ -468,8 +567,18 @@ CardGame.prototype.playHand = function(player,cards,cardIdxs,isComp){
    
    // Finished playing all cards in hand
    if(player.hand.length == 0){
-      alert("player out");
+      //alert("player out");
+      console.log("player "+player.name.innerHTML+" out");
       player.result = this.results++;
+      player.trickStatus.innerHTML += " - "+player.result;
+      $(player.trickStatus).addClass("Show");
+   }
+}
+
+
+CardGame.prototype.debugDeal = function(values,suit,player){
+   for(var i = 0; i < values.length; i++){
+      player.hand.push(new Card(values[i], suit));
    }
 }
 
