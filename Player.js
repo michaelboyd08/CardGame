@@ -17,6 +17,8 @@
 var Player = function(name,isComp,isDealer){
    this.dealer = false;
    this.hand = [];
+   this.giveCards = [];
+   this.giveCardsIdxs = [];
 
    var playerInfo = document.createElement("div");
    playerInfo.className = "playerInfo";
@@ -70,7 +72,7 @@ var Player = function(name,isComp,isDealer){
    this.node = cardPlayer;
    this.info = playerInfo;
    this.name = playerName;
-   this.stat = playerStatus;
+   this.status = playerStatus;
    this.deal = playerDealer;
    this.isComp = isComp;
    this.handContainer = handContainer;
@@ -117,17 +119,69 @@ Player.prototype.sortHand = function(){
    });
 }
 
+Player.prototype.getGiveCards = function(isSet){
+   var cards = [];
+   var cardIdxs = [];
+   // Scum and Vice Scum
+   if(this.result > 2){
+      cards.push(this.hand[this.hand.length-1]);
+      cardIdxs.push(this.hand.length-1);
+      if(this.result == 4){
+         cards.push(this.hand[this.hand.length-2]);
+         cardIdxs.splice(0,0,this.hand.length-2);
+      }
+   }
+   // Pres and Vice Pres
+   else{
+      cards.push(this.hand[0]);
+      cardIdxs.push(0);
+      if(this.result == 1){
+         cards.push(this.hand[1]);
+         cardIdxs.push(1);
+      }
+   }
+   if(isSet){
+      this.giveCardsIdxs = cardIdxs;
+   }
+   return cards;
+}
+
+Player.prototype.removeDisplayedCards = function(){
+   for(var i = 0; i < this.hand.length; i++){
+      if(config.debug.mode){
+         $(this.hand[i].node).off("click");
+         this.handContainer.removeChild(this.hand[i].node);
+      }else{
+         if(!this.isComp){
+            $(this.hand[i].node).off("click");
+            this.handContainer.removeChild(this.hand[i].node);
+         }
+      }
+   }
+}
+
 /**
  * Displays cards in player's hand
  */
-Player.prototype.displayCards = function(isStart){
+Player.prototype.displayCards = function(){
    for(var i = 0; i < this.hand.length; i++){
+      $(this.hand[i].node).addClass("playerCard");
       this.handContainer.appendChild(this.hand[i].node);
+      this.attachCardSelect(this.hand[i]);
+      /*
       $(this.hand[i].node).click({context: this.hand[i]}, function(e){
          var this_ptr = e.data.context;
          this_ptr.selectCard(this);   
       });
+      */
    }
+}
+
+Player.prototype.attachCardSelect = function(card){
+   $(card.node).click({context: card}, function(e){
+      var this_ptr = e.data.context;
+      this_ptr.selectCard(this);
+   });
 }
 
 /**
@@ -152,7 +206,7 @@ Player.prototype.displayCompCards = function(isStart){
 /**
  * Deck object to create cards in deck
  */
-var createDeck = function(){
+var Deck = function(){
    var cardValues = [3,4,5,6,7,8,9,10,11,12,13,14,15];
    var cardSuits = ['clubs','diamonds','hearts','spades'];
    this.cards = [];
@@ -175,6 +229,7 @@ var Card = function(val, suit){
    cardImg.className = "CardImage";
    cardImg.src = "PNG_Cards/"+this.image;
    this.node = cardImg;
+   this.isEvent = false;
    
    // Save possibly for multi player, 
    // every card will be played (clicked)
@@ -191,6 +246,7 @@ var Card = function(val, suit){
  * of card to be played in trick
  */
 Card.prototype.selectCard = function(cardImg){
+   console.log("select card");
    if($(cardImg).hasClass("selectedCard")){
       $(cardImg).removeClass("selectedCard"); 
    }else{

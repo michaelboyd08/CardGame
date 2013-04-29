@@ -75,7 +75,8 @@ Trick.prototype.isValid = function(cards,player){
                if(cards[0].val == cards[1].val){
                   if(cards.length == 4){
                      multiValid = false;
-                     if(cards[2].val == cards[3].val){
+                     if((cards[1].val == cards[2].val) && 
+                        (cards[2].val == cards[3].val)){
                         multiValid = true;
                      }
                   }
@@ -105,3 +106,15 @@ Trick.prototype.unselectCards = function(cards,player){
       }
    }
 }
+
+Trick.prototype.clearTrick = function(){
+   for(var i = 0; i < this.container.children.length; i++){
+      // Remove class names for modified positioning
+      $(this.container.children[i]).removeClass("firstCard");
+      $(this.container.children[i]).removeClass("playedCard");
+      this.container.removeChild(this.container.children[i]);
+      i--;
+   }
+   this.hand = [];
+}
+
