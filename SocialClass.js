@@ -27,6 +27,7 @@ var config = {
       vscum: "VS",
       scum: "S"
    },
+   delay: 1500,
 };
 
 var initialize = function(){
@@ -42,24 +43,25 @@ var initialize = function(){
  */
 var CardGame = function(){
    this.players = [];
+   this.timeoutIds = [];
    this.resultsIdxs = [];
    this.deck = new Deck();
    this.cardTrick = new Trick(0,0);
-   this.shuffleContainer = $("#displayDeck")[0];
+   this.shuffleContainer = document.getElementById("displayDeck");
    //this.createContainer();
    this.isGameStarted = false;
    this.isFirstGame = true;
    this.isFirstSwap = true;
 
-   this.startGameBtn = $("#startGameBtn")[0];
-   this.addPlayerBtn = $("#addPlayer")[0];
-   this.nextTrickBtn = $("#nextTrickBtn")[0];
-   this.swapCardsBtn = $("#swapCards")[0];
+   this.startGameBtn = document.getElementById("startGameBtn");
+   this.addPlayerBtn = document.getElementById("addPlayer");
+   this.nextTrickBtn = document.getElementById("nextTrickBtn");
+   this.swapCardsBtn = document.getElementById("swapCards");
 
    this.nextTrickBtn.disabled = true;
    this.swapCardsBtn.disabled = true;
 
-   this.nextTrick = $("#nextTrick")[0];
+   this.nextTrick = document.getElementById("nextTrick");
 
    // Start Game Button
    // Shuffles the deck 5 times, deals cards, and sorts players hands
@@ -91,9 +93,9 @@ var CardGame = function(){
             // Deal out cards
             this_ptr.dealCards();
          }else{
-            var cardValues1 = [7,7,9,9,11,11];
-            var cardValues2 = [4,4,8,9,10,11];
-            var cardValues3 = [3,4,5,6,11,12];
+            var cardValues1 = [7,7,7,7,14,15];
+            var cardValues2 = [8,8,9,9,10,11];
+            var cardValues3 = [10,10,10,10,11,12];
             var cardValues4 = [4,8,9,10,13,14];
             var values = [];
             values.push(cardValues1);
@@ -121,7 +123,7 @@ var CardGame = function(){
                   }
                }else{
                   players[j].displayCompCards(false);
-                  players[j].giveCards = players[j].getGiveCards(true);
+                  players[j].giveCards = players[j].getGiveCards(true,this_ptr.players.length);
                   if(config.debug.mode){
                      players[j].displayCards(false);
                   }
@@ -242,8 +244,8 @@ CardGame.prototype.handleSwap = function(){
                }
             }
             // S and VS
-            else{
-               tempCards = this_ptr.players[0].getGiveCards(false);
+            else if(this_ptr.players[0].result >= this_ptr.players.length-1){
+               tempCards = this_ptr.players[0].getGiveCards(false,this_ptr.players.length);
                if(cards.length == tempCards.length){
                   for(var j = 0; j < tempCards.length; j++){
                      if(cards[j] != tempCards[j]){
@@ -260,12 +262,20 @@ CardGame.prototype.handleSwap = function(){
                }
             }
          }
-         if(this_ptr.players[0].result <= 2){
-            alert("Invalid Cards - Select Valid Card(s)");
-         }else if(this_ptr.players[0].result == 3){
-            alert("Invalid Cards - Select Highest Card in Hand");
-         }else{
-            alert("Invalid Cards - Select 2 Highest Cards in Hand");
+
+         // Display Error alert for non middle men
+         if((this_ptr.players[0].result <= 2) || (this_ptr.players[0].result >= this_ptr.players.length-1)){
+            if(this_ptr.players[0].result <= 2){
+               alert("Invalid Cards - Select Valid Card(s)");
+            }else if(this_ptr.players[0].result == this_ptr.players.length-1){
+               alert("Invalid Cards - Select Highest Card in Hand");
+            }else{
+               alert("Invalid Cards - Select 2 Highest Cards in Hand");
+            }
+         }
+         // Middle men functionality
+         else{
+            this_ptr.initiateSwap();
          }
       });
       this.isFirstSwap = false;
@@ -329,10 +339,10 @@ CardGame.prototype.swapCards = function(){
          }
          
          // Scum and Vice Scum give highest
-         if(this.players[index].result > 2){
+         if(this.players[index].result >= this.players.length-1){
             //this.players[index].hand.splice(this.players[index].hand.length-1,1);
             // Scum give Pres
-            if(this.players[index].result == 4){
+            if(this.players[index].result == this.players.length){
                this.giveCards(this.resultsIdxs[0],cards[k]);
             }
             // Vice Scum give Vice Pres
@@ -392,7 +402,11 @@ CardGame.prototype.assignStatus = function(player,index){
       $(player.status).addClass("Scum");
       this.resultsIdxs[3] = index;
    }
-   // Do nothing for middle men/citizens
+   // Clear previous text if there for
+   // middle men
+   else{
+      player.status.innerHTML = "";
+   }
 }
 
 
@@ -461,44 +475,20 @@ CardGame.prototype.startGame = function(){
    }
 }
 
-
-
 /**
  * Automates play for computer players
  */
-CardGame.prototype.automatePlay = function(idx,isPassed){
-   //TODO: Fix issue here at the end of game stalling
-   console.log("in automatePlay");
-   if(isPassed){
-      console.log("passed");
-      while(this.isValidPlayers()){
-         if(!this.autoPlayComp(idx,1)){
-            // Comp player went out
-            break;
-         }else{
-            idx = 1;
-         }
-      }
-      this.clearTrick();
-   }else{
-      console.log("not passed");
-      if(!this.autoPlayComp(idx,0)){
-         this.clearTrick();
-      }else{
-         console.log("human play");
-         // Hard Code Human
-         // Human still can play
-         if(this.isValidPlayers()){
-            console.log("human cards left: "+this.players[0].hand.length);
-            console.log("human results: "+this.players[0].result);
-            this.players[0].play.disabled = false;
-            this.players[0].pass.disabled = false;
-            $(this.players[0].turn).addClass("Show");
-         }else{
-            this.clearTrick();
-         }
-      }
+CardGame.prototype.automatePlay = function(index,isPassed){
+   var factor = 1;
+   var timeDelay = config.delay;
+   $(this.players[index].turn).addClass("Show");
+   for(var i = index; i < this.players.length; i++){
+      this.setAutoPlayTimer(i,factor++,timeDelay);
    }
+
+   var delay = ((factor-1)*timeDelay)+500;
+   //console.log("delay: "+delay);
+   this.controlId = setTimeout(this.resumePlay,delay,this,isPassed);
 }
 
 /**
@@ -575,6 +565,7 @@ CardGame.prototype.clearTrick = function(isPlayerTurn){
          }
       }
       // Show game over and next option
+      this.cardTrick.trickLabel.innerHTML = "Trick Rule";
       this.cardTrick.cleared.innerHTML = "Game Over";
       $("#UserButtons").addClass("cleared");
       $("#GameContainer").addClass("cleared");
@@ -662,36 +653,78 @@ CardGame.prototype.startTrick = function(){
    }
 }
 
+CardGame.prototype.resumePlay = function(this_ptr,isPassed){
+   this_ptr.timeoutIds = [];
+   clearTimeout(this_ptr.controlId);
+   this_ptr.controlId = null
+   if(this_ptr.isValidPlayers()){
+      if(isPassed){
+         this_ptr.automatePlay(1,true);
+      }else{
+         console.log("human cards left: "+this_ptr.players[0].hand.length);
+         console.log("human results: "+this_ptr.players[0].result);
+         this_ptr.players[0].play.disabled = false;
+         this_ptr.players[0].pass.disabled = false;
+         $(this_ptr.players[0].turn).addClass("Show");
+      }
+   }else{
+      this_ptr.clearTrick();
+   }
+}
+
+CardGame.prototype.exitAutoPlay = function(){
+   console.log("player out");
+   clearTimeout(this.controlId);
+   this.controlId = null
+   for(var i = this.players.length-1; i >= 0; i--){
+      clearTimeout(this.timeoutIds[i]);
+   }
+   this.timeoutIds = [];
+   this.clearTrick();
+}
+
+CardGame.prototype.setAutoPlayTimer = function(index,factor,timeDelay){
+   var this_ptr = this;
+   this.timeoutIds.push(setTimeout(this.autoPlayComp,(factor * timeDelay),index,this_ptr));
+}
+
 /**
  * Automated card playing for computer player
  */
-CardGame.prototype.autoPlayComp = function(index,passedNum){
-   for(var i = index; i < this.players.length; i++){
-      $(this.players[i].turn).addClass("Show");
-      //alert("comp turn");
-      console.log("Comp playing: "+this.players[i].name.innerHTML);
-      console.log("Comp passed hand: "+this.players[i].passHand);
-      console.log("Comp results: "+this.players[i].result);
-      console.log("Cards left: "+this.players[i].hand.length);
-      if(this.players[i].isComp && !this.players[i].passHand && this.players[i].result < 0){
-         // Check to prevent player who already won trick from playing again
-         //$(this.players[i].turn).addClass("Show");
-         if(this.players[i] == this.cardTrick.lastPlayed && this.passedHands == this.players.length-1){
-            return false;
-         }else{
-            this.compPlayCardsInTrick(this.players[i]);
-            if(this.players[i].result > 0){
-               return false;
-            }
+CardGame.prototype.autoPlayComp = function(idx,this_ptr){
+   //alert("comp turn");
+   var isOver = false;
+   console.log("Comp playing: "+this_ptr.players[idx].name.innerHTML);
+   console.log("Comp passed hand: "+this_ptr.players[idx].passHand);
+   console.log("Comp results: "+this_ptr.players[idx].result);
+   console.log("Cards left: "+this_ptr.players[idx].hand.length);
+   if(this_ptr.players[idx].isComp && !this_ptr.players[idx].passHand 
+      && this_ptr.players[idx].result < 0){
+      // Check to prevent player who already won trick from playing again
+      if(this_ptr.players[idx] == this_ptr.cardTrick.lastPlayed 
+         && this_ptr.passedHands == this_ptr.players.length-1){
+         this_ptr.exitAutoPlay();
+         isOver = true;
+      }else{
+         this_ptr.compPlayCardsInTrick(this_ptr.players[idx]);
+         if(this_ptr.players[idx].result > 0){
+            this_ptr.exitAutoPlay();
+            isOver = true;
          }
       }
-      // Previously passed hand
-      else{
-         console.log("comp prev passed");
-         $(this.players[i].turn).removeClass("Show");
+   }
+   // Previously passed hand
+   else{
+      console.log("comp prev passed");
+      $(this_ptr.players[idx].turn).removeClass("Show");
+   }
+
+   if(!isOver){
+      // Add turn label for next player if valid
+      if((idx+1) < this_ptr.players.length){
+         $(this_ptr.players[idx+1].turn).addClass("Show");
       }
    }
-   return true;
 }
 
 /**

@@ -119,20 +119,20 @@ Player.prototype.sortHand = function(){
    });
 }
 
-Player.prototype.getGiveCards = function(isSet){
+Player.prototype.getGiveCards = function(isSet,numPlayers){
    var cards = [];
    var cardIdxs = [];
    // Scum and Vice Scum
-   if(this.result > 2){
+   if(this.result >= numPlayers-1){
       cards.push(this.hand[this.hand.length-1]);
       cardIdxs.push(this.hand.length-1);
-      if(this.result == 4){
-         cards.push(this.hand[this.hand.length-2]);
+      if(this.result == numPlayers){
+         cards.splice(0,0,this.hand[this.hand.length-2]);
          cardIdxs.splice(0,0,this.hand.length-2);
       }
    }
    // Pres and Vice Pres
-   else{
+   else if(this.result <= 2){
       cards.push(this.hand[0]);
       cardIdxs.push(0);
       if(this.result == 1){
@@ -178,6 +178,8 @@ Player.prototype.displayCards = function(){
 }
 
 Player.prototype.attachCardSelect = function(card){
+   console.log("attach card select");
+   console.log("card: "+card.image);
    $(card.node).click({context: card}, function(e){
       var this_ptr = e.data.context;
       this_ptr.selectCard(this);
