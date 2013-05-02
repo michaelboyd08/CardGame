@@ -93,7 +93,7 @@ var CardGame = function(){
             // Deal out cards
             this_ptr.dealCards();
          }else{
-            var cardValues1 = [7,7,7,7,14,15];
+            var cardValues1 = [7,7,7,9,14,15];
             var cardValues2 = [8,8,9,9,10,11];
             var cardValues3 = [10,10,10,10,11,12];
             var cardValues4 = [4,8,9,10,13,14];
@@ -160,12 +160,12 @@ var CardGame = function(){
    // Attach add player to enter key
    $("#inputName").keypress({context: this}, function(e){
       var this_ptr = e.data.context;
-      if(e.keyCode == 13){
+      if(e.keyCode === 13){
          e.preventDefault();
          var name = $("#inputName").val();
          if(name != "" && !this_ptr.isGameStarted){
             // First Player entered is Human
-            if(this_ptr.players.length == 0){
+            if(this_ptr.players.length === 0){
                this_ptr.players.push(new Player(name,false,true));
             }
             // Computer Players entered
@@ -182,7 +182,7 @@ var CardGame = function(){
       var this_ptr = e.data.context;
       var name = $("#inputName").val();
       if(!this_ptr.isGameStarted){
-         if(this_ptr.players.length == 0){
+         if(this_ptr.players.length === 0){
             this_ptr.players.push(new Player(name,false,true));
          }else{
             this_ptr.players.push(new Player(name,true,false));
@@ -232,11 +232,11 @@ CardGame.prototype.handleSwap = function(){
                cardIdxs.push(i);
             }
          }
-         if(cards.length == 1 || cards.length == 2){
+         if(cards.length === 1 || cards.length === 2){
             // P and VP
             if(this_ptr.players[0].result <= 2){
-               if((this_ptr.players[0].result == 1 && cards.length == 2) ||
-                  (this_ptr.players[0].result == 2 && cards.length == 1)){
+               if((this_ptr.players[0].result === 1 && cards.length === 2) ||
+                  (this_ptr.players[0].result === 2 && cards.length === 1)){
                   this_ptr.players[0].giveCards = cards;
                   this_ptr.players[0].giveCardsIdxs = cardIdxs;
                   this_ptr.initiateSwap();
@@ -246,7 +246,7 @@ CardGame.prototype.handleSwap = function(){
             // S and VS
             else if(this_ptr.players[0].result >= this_ptr.players.length-1){
                tempCards = this_ptr.players[0].getGiveCards(false,this_ptr.players.length);
-               if(cards.length == tempCards.length){
+               if(cards.length === tempCards.length){
                   for(var j = 0; j < tempCards.length; j++){
                      if(cards[j] != tempCards[j]){
                         invalid = true;
@@ -267,7 +267,7 @@ CardGame.prototype.handleSwap = function(){
          if((this_ptr.players[0].result <= 2) || (this_ptr.players[0].result >= this_ptr.players.length-1)){
             if(this_ptr.players[0].result <= 2){
                alert("Invalid Cards - Select Valid Card(s)");
-            }else if(this_ptr.players[0].result == this_ptr.players.length-1){
+            }else if(this_ptr.players[0].result === this_ptr.players.length-1){
                alert("Invalid Cards - Select Highest Card in Hand");
             }else{
                alert("Invalid Cards - Select 2 Highest Cards in Hand");
@@ -309,11 +309,19 @@ CardGame.prototype.sortAndDisplay = function(){
 }
 
 CardGame.prototype.giveCards = function(resIdx,card){
+   // Add card to player hand reference
+   // Remove card select 
+   $(card.node).off("click");
    this.players[resIdx].hand.push(card);
+
+
+   // Add card to player hand DOM
    if(config.debug.mode){
+      $(card.node).addClass("swappedCard");
       this.players[resIdx].handContainer.appendChild(card.node);
    }else{
       if(!this.players[resIdx].isComp){
+         $(card.node).addClass("swappedCard");
          this.players[resIdx].handContainer.appendChild(card.node);
       }
    }
@@ -330,6 +338,7 @@ CardGame.prototype.swapCards = function(){
       //cards = this.players[index].getGiveCards();
       cards = this.players[index].giveCards;
       for(var k = cards.length-1; k >= 0; k--){
+         console.log("swapped card: "+cards[k].image);
          if(config.debug.mode){
             this.players[index].handContainer.removeChild(cards[k].node);
          }else{
@@ -342,7 +351,7 @@ CardGame.prototype.swapCards = function(){
          if(this.players[index].result >= this.players.length-1){
             //this.players[index].hand.splice(this.players[index].hand.length-1,1);
             // Scum give Pres
-            if(this.players[index].result == this.players.length){
+            if(this.players[index].result === this.players.length){
                this.giveCards(this.resultsIdxs[0],cards[k]);
             }
             // Vice Scum give Vice Pres
@@ -354,7 +363,7 @@ CardGame.prototype.swapCards = function(){
          else{
             //this.players[index].hand.splice(0,1);
             // Pres give Scum
-            if(this.players[index].result == 1){
+            if(this.players[index].result === 1){
                this.giveCards(this.resultsIdxs[3],cards[k]);
             }
             // Vice Pres give Vice Scum
@@ -364,6 +373,7 @@ CardGame.prototype.swapCards = function(){
          }
       }
 
+      // Remove cards from giver's hand
       for(var j = this.players[index].giveCardsIdxs.length-1; j >= 0; j--){
          this.players[index].hand.splice(this.players[index].giveCardsIdxs[j],1);
       }
@@ -379,25 +389,25 @@ CardGame.prototype.assignStatus = function(player,index){
    $(player.status).removeClass("Scum");
 
    // President
-   if(player.result == 1){
+   if(player.result === 1){
       player.status.innerHTML = config.stat.pres;
       $(player.status).addClass("Pres");
       this.resultsIdxs[0] = index;
    }
    // Vice President
-   else if(player.result == 2){
+   else if(player.result === 2){
       player.status.innerHTML = config.stat.vpres;
       $(player.status).addClass("vicePres");
       this.resultsIdxs[1] = index;
    }
    // Vice Scum
-   else if(player.result == this.players.length-1){
+   else if(player.result === this.players.length-1){
       player.status.innerHTML = config.stat.vscum;
       $(player.status).addClass("viceScum");
       this.resultsIdxs[2] = index;
    }
    // Scum
-   else if(player.result == this.players.length){
+   else if(player.result === this.players.length){
       player.status.innerHTML = config.stat.scum;
       $(player.status).addClass("Scum");
       this.resultsIdxs[3] = index;
@@ -548,7 +558,9 @@ CardGame.prototype.clearTrick = function(isPlayerTurn){
                   $(this.players[j].hand[k].node).removeClass("playerCard");
                   this.players[j].handContainer.removeChild(this.players[j].hand[k].node);
                }else{
-                  console.log("card: "+this.players[j].hand[k].image);
+                  console.log("remove card select");
+                  console.log(this.players[j].hand[k].image);
+                  //console.log("card: "+this.players[j].hand[k].image);
                   $(this.players[j].hand[k].node).off("click");
                   if(!this.players[j].isComp){
                      $(this.players[j].hand[k].node).removeClass("playerCard");
@@ -604,12 +616,12 @@ CardGame.prototype.startTrick = function(){
             break;
          }
       }else{
-         if(this.players[i] == this.cardTrick.lastPlayed){
+         if(this.players[i] === this.cardTrick.lastPlayed){
             // Check if player is out
             if(this.players[i].result > 0){
                isPlayerOut = true;
                this.playersOut++;
-               if(i == this.players.length-1){
+               if(i === this.players.length-1){
                   i = -1;
                }
                continue;
@@ -701,8 +713,8 @@ CardGame.prototype.autoPlayComp = function(idx,this_ptr){
    if(this_ptr.players[idx].isComp && !this_ptr.players[idx].passHand 
       && this_ptr.players[idx].result < 0){
       // Check to prevent player who already won trick from playing again
-      if(this_ptr.players[idx] == this_ptr.cardTrick.lastPlayed 
-         && this_ptr.passedHands == this_ptr.players.length-1){
+      if(this_ptr.players[idx] === this_ptr.cardTrick.lastPlayed 
+         && this_ptr.passedHands === this_ptr.players.length-1){
          this_ptr.exitAutoPlay();
          isOver = true;
       }else{
@@ -735,9 +747,9 @@ CardGame.prototype.compPlayCardsInTrick = function(player){
    var idxs = [];
    var isPass = true;
    for(var i = 0; i < player.hand.length; i++){
-      if(this.cardTrick.rule == "Singles" || this.cardTrick.rule == "Pairs" || 
-      this.cardTrick.rule == "Quads"){
-         if(this.cardTrick.rule != "Singles" && ((i == (player.hand.length-(this.cardTrick.hand.length-1))) || 
+      if(this.cardTrick.rule === "Singles" || this.cardTrick.rule === "Pairs" || 
+      this.cardTrick.rule === "Quads"){
+         if(this.cardTrick.rule != "Singles" && ((i === (player.hand.length-(this.cardTrick.hand.length-1))) || 
          player.hand.length < this.cardTrick.hand.length)){
             console.log("prevent index out of bounds break");
             break;
@@ -788,6 +800,9 @@ CardGame.prototype.playCardsInTrick = function(player){
          cards.push(player.hand[i]);
          cardIdxs.push(i);
       }
+      if($(player.hand[i].node).hasClass("swappedCard")){
+         $(player.hand[i].node).removeClass("swappedCard");
+      }
    }
    // Create trick from first hand played
    if(this.firstHand){
@@ -820,6 +835,8 @@ CardGame.prototype.playHand = function(player,cards,cardIdxs,isComp){
             $(cards[i].node).removeClass("selectedCard");
             $(cards[i].node).removeClass("playerCard");
             $(cards[i].node).off("click");
+            console.log("remove card select");
+            console.log(cards[i].image);
          }   
       }
       if(this.firstHand){
@@ -848,7 +865,7 @@ CardGame.prototype.playHand = function(player,cards,cardIdxs,isComp){
    $(player.turn).removeClass("Show");
    
    // Finished playing all cards in hand
-   if(player.hand.length == 0){
+   if(player.hand.length === 0){
       //alert("player out");
       console.log("player "+player.name.innerHTML+" out");
       player.result = this.results++;
@@ -863,7 +880,7 @@ CardGame.prototype.playHand = function(player,cards,cardIdxs,isComp){
  */
 CardGame.prototype.shuffleCards = function(){
    var i = this.deck.cards.length, j, tempi, tempj;
-   if(i == 0) return false;
+   if(i === 0) return false;
    while(--i){
       j = Math.floor(Math.random() * (i+1));
       tempi = this.deck.cards[i];
@@ -881,7 +898,7 @@ CardGame.prototype.dealCards = function(){
    var j = 0;
    for(var i = 0; i < this.deck.cards.length; i++){
       // loop back around and deal
-      if(j == this.players.length){
+      if(j === this.players.length){
          j = 0;
       }
       this.players[j].hand.push(this.deck.cards[i]);
@@ -908,7 +925,7 @@ CardGame.prototype.createContainer = function(){
       var card = document.createElement("img");
       card.className = "CardImage";
       card.src = "PNG_Cards/"+this.deck.cards[i].image;
-      if(i % 13 == 0 && i != 0){
+      if(i % 13 === 0 && i != 0){
          j++;
       }
       console.log("i: "+i);
@@ -925,11 +942,11 @@ CardGame.prototype.displayShuffle = function(){
    var i = 0;
    var k = 0;
    while(j != 4){
-      if(i % 13 == 0 && i != 0){
+      if(i % 13 === 0 && i != 0){
          j++;
          i = 0; 
       }
-      if(j == 4)
+      if(j === 4)
          break;
       console.log("i: "+i);
       console.log("j: "+j);

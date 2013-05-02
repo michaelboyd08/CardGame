@@ -172,7 +172,14 @@ div.playerInfo {
    cursor: pointer;
 }
 
+.swappedCard {
+   height: 68px;
+   border: 2px solid blue;
+   margin: -1px -1px 0px -31px;
+}
+
 .selectedCard {
+   height: 70px;
    border: 2px solid green;
    margin: -1px -1px -1px -31px;
    transform: translate3d(0px,-10px,0px);

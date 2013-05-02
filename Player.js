@@ -126,7 +126,7 @@ Player.prototype.getGiveCards = function(isSet,numPlayers){
    if(this.result >= numPlayers-1){
       cards.push(this.hand[this.hand.length-1]);
       cardIdxs.push(this.hand.length-1);
-      if(this.result == numPlayers){
+      if(this.result === numPlayers){
          cards.splice(0,0,this.hand[this.hand.length-2]);
          cardIdxs.splice(0,0,this.hand.length-2);
       }
@@ -135,7 +135,7 @@ Player.prototype.getGiveCards = function(isSet,numPlayers){
    else if(this.result <= 2){
       cards.push(this.hand[0]);
       cardIdxs.push(0);
-      if(this.result == 1){
+      if(this.result === 1){
          cards.push(this.hand[1]);
          cardIdxs.push(1);
       }
@@ -153,6 +153,8 @@ Player.prototype.removeDisplayedCards = function(){
          this.handContainer.removeChild(this.hand[i].node);
       }else{
          if(!this.isComp){
+            console.log("remove card select");
+            console.log(this.hand[i].image);
             $(this.hand[i].node).off("click");
             this.handContainer.removeChild(this.hand[i].node);
          }
@@ -164,6 +166,7 @@ Player.prototype.removeDisplayedCards = function(){
  * Displays cards in player's hand
  */
 Player.prototype.displayCards = function(){
+   console.log("player displayed Cards: "+this.name.innerHTML);
    for(var i = 0; i < this.hand.length; i++){
       $(this.hand[i].node).addClass("playerCard");
       this.handContainer.appendChild(this.hand[i].node);
