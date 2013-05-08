@@ -18,7 +18,7 @@
  */
 var config = {
    debug: {
-      mode: false,
+      mode: true,
       deal: false
    },
    stat: {
@@ -62,6 +62,7 @@ var CardGame = function(){
    this.swapCardsBtn.disabled = true;
 
    this.nextTrick = document.getElementById("nextTrick");
+   $("#inputName").focus();
 
    // Start Game Button
    // Shuffles the deck 5 times, deals cards, and sorts players hands
@@ -455,7 +456,7 @@ CardGame.prototype.startGame = function(){
                   if(player.playedCard){
                      player.playedCard = false;
                      // Clear trick on player going out
-                     if(player.result > 0){
+                     if(player.result > 0 || player.trumpPlayed){
                         this_ptr.clearTrick();
                      }else{
                         this_ptr.automatePlay(1,false);
@@ -637,6 +638,7 @@ CardGame.prototype.startTrick = function(){
    for(var j = 0; j < this.players.length; j++){
       // Reset players info
       this.players[j].passHand = false;
+      this.players[j].trumpPlayed = false;
       $(this.players[j].handStatus).removeClass("Show");
    }
 
@@ -718,8 +720,9 @@ CardGame.prototype.autoPlayComp = function(idx,this_ptr){
          this_ptr.exitAutoPlay();
          isOver = true;
       }else{
+         // Computer try to play hand
          this_ptr.compPlayCardsInTrick(this_ptr.players[idx]);
-         if(this_ptr.players[idx].result > 0){
+         if(this_ptr.players[idx].result > 0 || this_ptr.players[idx].trumpPlayed){
             this_ptr.exitAutoPlay();
             isOver = true;
          }
@@ -823,6 +826,11 @@ CardGame.prototype.playCardsInTrick = function(player){
  */
 CardGame.prototype.playHand = function(player,cards,cardIdxs,isComp){
    for(var i = 0; i < cards.length; i++){
+      // Check if trump card played (2 card)
+      if(cards[i].val === 15){
+         player.trumpPlayed = true;
+      }
+
       // Turn off 'if statement' for debugging if comp cards displayed
       if(config.debug.mode){
          cards[i].node.parentNode.removeChild(cards[i].node);
@@ -862,7 +870,9 @@ CardGame.prototype.playHand = function(player,cards,cardIdxs,isComp){
       player.pass.disabled = true;
    }
    player.playedCard = true;
-   $(player.turn).removeClass("Show");
+   if(!player.trumpPlayed){
+      $(player.turn).removeClass("Show");
+   }
    
    // Finished playing all cards in hand
    if(player.hand.length === 0){

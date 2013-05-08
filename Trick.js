@@ -91,6 +91,14 @@ Trick.prototype.isValid = function(cards,player){
             }
          }
       }
+      // Check for one trump card (2 card)
+      else if(cards.length === 1){
+         if(cards[0].val === 15){
+            this.hand[0] = cards[0];
+            this.lastPlayed = player;
+            return true;
+         }
+      }
    }
    // Invalid Card - unselect and put back in hand
    this.unselectCards(cards,player);

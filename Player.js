@@ -84,6 +84,7 @@ var Player = function(name,isComp,isDealer){
 
    this.passHand = false;
    this.result = -1;
+   this.trumpPlayed = false;
 
    playerInfo.appendChild(playerName);
    playerInfo.appendChild(playerStatus);

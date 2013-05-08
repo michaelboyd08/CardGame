@@ -97,7 +97,7 @@ input[type=button] {
 }
 
 div.playerInfo {
-   width: 100px;
+   width: 120px;
    vertical-align: top;
    display: inline-block;
 }
@@ -192,6 +192,10 @@ div.playerInfo {
 
 .firstCard {
    margin: 5px 2px 2px 10px;
+}
+
+.compHand {
+   margin-left: 10px;
 }
 
 div.CardCounter {
