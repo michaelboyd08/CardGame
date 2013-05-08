@@ -18,7 +18,7 @@
  */
 var config = {
    debug: {
-      mode: true,
+      mode: false,
       deal: false
    },
    stat: {
