@@ -22,9 +22,7 @@ var Player = function(name,isComp,isDealer){
 
    var playerInfo = document.createElement("div");
    playerInfo.className = "playerInfo";
-   
    var cardPlayer = document.createElement("div");
-   cardPlayer.className = "cardPlayer";
    var playerName = document.createElement("div");
    playerName.className = "playerName";
    playerName.innerHTML = name;
@@ -32,6 +30,12 @@ var Player = function(name,isComp,isDealer){
    playerStatus.className = "status";
    var playerDealer = document.createElement("div");
    playerDealer.className = "dealer";
+
+   var statusContainer = document.createElement("div");
+   statusContainer.className = "infoContainer";
+   statusContainer.appendChild(playerStatus);
+   statusContainer.appendChild(playerDealer);
+
    if(!isComp){
       var playerPlay = document.createElement("input");
       playerPlay.className = "playerTurn playerPlay";
@@ -60,6 +64,11 @@ var Player = function(name,isComp,isDealer){
    handStatus.className = "handStatus";
    handStatus.innerHTML = "Passed";
 
+   var turnContainer = document.createElement("div");
+   turnContainer.className = "infoTurnContainer";
+   turnContainer.appendChild(handStatus);
+   turnContainer.appendChild(currentTurn);
+
    var trickStatus = document.createElement("div");
    trickStatus.className = "playerTrickStatus";
    trickStatus.innerHTML = "OUT";
@@ -87,26 +96,28 @@ var Player = function(name,isComp,isDealer){
    this.trumpPlayed = false;
 
    playerInfo.appendChild(playerName);
-   playerInfo.appendChild(playerStatus);
-   playerInfo.appendChild(playerDealer);
-   playerInfo.appendChild(currentTurn);
+   playerInfo.appendChild(statusContainer);
+   playerInfo.appendChild(turnContainer);
+   playerInfo.appendChild(trickStatus);
+   cardPlayer.appendChild(playerInfo);
+
    if(!isComp){
-      playerInfo.appendChild(playerPlay);
-      playerInfo.appendChild(playerPass);
-      playerInfo.appendChild(handStatus);
-      playerInfo.appendChild(trickStatus);
-      cardPlayer.appendChild(playerInfo);
-   }
-   if(isComp){
-      playerInfo.appendChild(handStatus);
-      playerInfo.appendChild(trickStatus);
-      cardPlayer.appendChild(playerInfo);
+      cardPlayer.className = "cardPlayer humanPlayer";
+      cardPlayer.appendChild(handContainer);
+      var playButtons = document.createElement("div");
+      playButtons.className = "playButtons";
+      playButtons.appendChild(playerPlay);
+      playButtons.appendChild(playerPass);
+      cardPlayer.appendChild(playButtons);
+   }else{
+      cardPlayer.className = "cardPlayer compPlayer";
       cardPlayer.appendChild(compContainer);
    }
-   cardPlayer.appendChild(handContainer);
 
-   var playContainer = document.getElementById("PlayersContainer");
-   playContainer.appendChild(cardPlayer);
+   var displayName = document.createElement("div");
+   displayName.className = "displayPlayer";
+   displayName.innerHTML = name;
+   $("#nameContainer").append(displayName);
 }
 
 /**
@@ -172,12 +183,6 @@ Player.prototype.displayCards = function(){
       $(this.hand[i].node).addClass("playerCard");
       this.handContainer.appendChild(this.hand[i].node);
       this.attachCardSelect(this.hand[i]);
-      /*
-      $(this.hand[i].node).click({context: this.hand[i]}, function(e){
-         var this_ptr = e.data.context;
-         this_ptr.selectCard(this);   
-      });
-      */
    }
 }
 
@@ -200,12 +205,12 @@ Player.prototype.displayCompCards = function(isStart){
       cardImg.src = "PNG_Cards/Red_Back.png";
       var cardCounter = document.createElement("div");
       cardCounter.className = "CardCounter";
-      cardCounter.innerHTML = "x "+this.hand.length;
+      cardCounter.innerHTML = "x"+this.hand.length;
       this.counter = cardCounter;
       this.compContainer.appendChild(cardImg);
       this.compContainer.appendChild(cardCounter);
    }else{
-      this.counter.innerHTML = "x "+this.hand.length;
+      this.counter.innerHTML = "x"+this.hand.length;
    }
 }
 
