@@ -25,22 +25,31 @@ Trick.prototype.setValues = function(cards,player){
    for(var i = 0; i < cards.length; i++){
       this.hand.push(cards[i]);
    }
+   // Singles rule
    if(this.hand.length === 1){
       this.rule = "Singles";
-   }else if(this.hand.length === 2 || this.hand.length === 4){
+   }else if(this.hand.length >= 2 || this.hand.length <= 4){
       if(this.hand[0].val === this.hand[1].val){
+         // Pairs rule
          if(this.hand.length === 2){
             this.rule = "Pairs";
          }else{
-            if(this.hand[1].val === this.hand[2].val && 
-            this.hand[2].val === this.hand[3].val){
-               this.rule = "Quads";
+            if(this.hand[1].val === this.hand[2].val){
+               // Trips rule
+               if(this.hand.length === 3){
+                  this.rule = "Trips";
+               }else{
+                  // Quads rule
+                  if(this.hand[2].val === this.hand[3].val){
+                     this.rule = "Quads";
+                  }
+               }
             }
          }
       }
    }
 
-   if(this.rule != ""){
+   if(this.rule !== ""){
       console.log("Trick.js - last played: "+player.name.innerHTML);
       this.isValidCards = true;
       this.lastPlayed = player;
@@ -58,7 +67,7 @@ Trick.prototype.setValues = function(cards,player){
 Trick.prototype.isValid = function(cards,player){
    //console.log("trick isValid");
    var multiValid = true;
-   if(this.rule === "Singles" || this.rule === "Pairs" || this.rule === "Quads"){
+   if(this.rule !== ""){
       //console.log("rule: "+this.rule);
       //console.log("cards: "+cards.length);
       //console.log("trick hand: "+this.hand.length);
@@ -70,10 +79,15 @@ Trick.prototype.isValid = function(cards,player){
                this.lastPlayed = player;
                return true;
             }
-            // Pairs or Quads
+            // Pairs, Trips, or Quads
             else{
                if(cards[0].val === cards[1].val){
-                  if(cards.length === 4){
+                  if(cards.length === 3){
+                     multiValid = false;
+                     if(cards[1].val === cards[2].val){
+                        multiValid = true;
+                     }
+                  }else if(cards.length === 4){
                      multiValid = false;
                      if((cards[1].val === cards[2].val) && 
                         (cards[2].val === cards[3].val)){

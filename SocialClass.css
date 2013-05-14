@@ -49,12 +49,36 @@ input[type=button] {
    margin: 5px 0px 5px 10px;
 }
 
+#playPrompt {
+   display: block;
+   color: blue;
+   margin-left: 50px;
+}
+
+#inputName {
+   width: 170px;
+}
+
 #nameContainer {
    margin-left: 92px;
 }
 
 .displayPlayer {
    margin-top: 4px;
+}
+
+.displayPlayer span {
+   display: inline-block;
+   vertical-align: top;
+}
+
+.displayNumber {
+   margin-right: 15px;
+}
+
+.displayName {
+   width: 140px;
+   margin-right: 10px;
 }
 
 #GameContainer {
@@ -115,6 +139,10 @@ input[type=button] {
    margin-left: 0px;
 }
 
+.hand.debugHand {
+   display: block;
+}
+
 .cardPlayer.humanPlayer {
    margin-left: 18%;
 }
@@ -124,7 +152,7 @@ input[type=button] {
 }
 
 .cardPlayer div {
-   display: inline;
+   display: inline-block;
 }
 
 div.playerInfo {
@@ -243,7 +271,7 @@ div.hand {
    margin: 5px 2px 2px 10px;
 }
 
-.compHand {
+div.compHand {
    margin-left: 10px;
 }
 

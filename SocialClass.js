@@ -32,6 +32,10 @@ var config = {
 
 var initialize = function(){
    new CardGame();
+   var isMobile = (/iPhone|iPod|iPad|Android|BlackBerry/).test(navigator.userAgent);
+   if(isMobile){
+      alert("Mobile browser");
+   }
 }
 
 /**
@@ -65,7 +69,7 @@ var CardGame = function(){
    $("#swapCardsBtn").prop("disabled",true);
 
    this.nextTrick = document.getElementById("nextTrick");
-   $("#inputName").focus();
+   //$("#inputName").focus();
 
    // Start Game Button
    // Shuffles the deck 5 times, deals cards, and sorts players hands
@@ -107,7 +111,7 @@ var CardGame = function(){
             this_ptr.dealCards();
          }else{
             var cardValues1 = [7,7,7,9,14,15];
-            var cardValues2 = [8,8,9,9,10,11];
+            var cardValues2 = [8,9,9,9,10,11];
             var cardValues3 = [10,10,10,10,11,12];
             var cardValues4 = [4,8,9,10,13,14];
             var values = [];
@@ -126,9 +130,9 @@ var CardGame = function(){
                if(this_ptr.isFirstGame){
                   // Add Human to DOM
                   $("#GameContainer").append(players[j].node);
-                  players[j].displayCards(true);
+                  players[j].displayCards();
                }else{
-                  players[j].displayCards(false);
+                  players[j].displayCards();
                }
             }else{
                if(this_ptr.isFirstGame){
@@ -147,13 +151,17 @@ var CardGame = function(){
                   }
                   players[j].displayCompCards(true);
                   if(config.debug.mode){
-                     players[j].displayCards(true);
+                     players[j].displayCards();
+                     // Move Hand to bottom of view
+                     players[j].node.removeChild(players[j].handContainer);
+                     $(players[j].handContainer).addClass("debugHand");
+                     $("#GameContainer").append(players[j].handContainer);
                   }
                }else{
                   players[j].displayCompCards(false);
                   players[j].giveCards = players[j].getGiveCards(true,this_ptr.players.length);
                   if(config.debug.mode){
-                     players[j].displayCards(false);
+                     players[j].displayCards();
                   }
                }
             }
@@ -210,14 +218,15 @@ var CardGame = function(){
 }
 
 CardGame.prototype.addPlayer = function(name){
-   if(name != "" && !this.isGameStarted){
+   if(name !== "" && !this.isGameStarted){
       // First Player entered is Human
       if(this.players.length === 0){
-         this.players.push(new Player(name,false,true));
+         this.players.push(new Player(name,(this.players.length+1),false,true));
+         $("#inputName").prop("placeholder","Enter Computer Players");
       }
       // Computer Players entered
       else{
-         this.players.push(new Player(name,true,false));
+         this.players.push(new Player(name,(this.players.length+1),true,false));
       }
    }
    $("#inputName").val("");
@@ -273,7 +282,7 @@ CardGame.prototype.handleSwap = function(){
                tempCards = this_ptr.players[0].getGiveCards(false,this_ptr.players.length);
                if(cards.length === tempCards.length){
                   for(var j = 0; j < tempCards.length; j++){
-                     if(cards[j] != tempCards[j]){
+                     if(cards[j] !== tempCards[j]){
                         invalid = true;
                         break;
                      }
@@ -783,9 +792,8 @@ CardGame.prototype.compPlayCardsInTrick = function(player){
    var idxs = [];
    var isPass = true;
    for(var i = 0; i < player.hand.length; i++){
-      if(this.cardTrick.rule === "Singles" || this.cardTrick.rule === "Pairs" || 
-      this.cardTrick.rule === "Quads"){
-         if(this.cardTrick.rule != "Singles" && ((i === (player.hand.length-(this.cardTrick.hand.length-1))) || 
+      if(this.cardTrick.rule !== ""){
+         if(this.cardTrick.rule !== "Singles" && ((i === (player.hand.length-(this.cardTrick.hand.length-1))) || 
          player.hand.length < this.cardTrick.hand.length)){
             console.log("prevent index out of bounds break");
             break;
@@ -815,7 +823,7 @@ CardGame.prototype.compPlayCardsInTrick = function(player){
 
    // Passed Hand this turn
    if(isPass){
-      if(this.cardTrick.lastPlayed != player){
+      if(this.cardTrick.lastPlayed !== player){
          player.passHand = true;
          $(player.handStatus).addClass("Show");
       }
@@ -970,7 +978,7 @@ CardGame.prototype.createContainer = function(){
       var card = document.createElement("img");
       card.className = "CardImage";
       card.src = "PNG_Cards/"+this.deck.cards[i].image;
-      if(i % 13 === 0 && i != 0){
+      if(i % 13 === 0 && i !== 0){
          j++;
       }
       console.log("i: "+i);
@@ -986,8 +994,8 @@ CardGame.prototype.displayShuffle = function(){
    var j = 0;
    var i = 0;
    var k = 0;
-   while(j != 4){
-      if(i % 13 === 0 && i != 0){
+   while(j !== 4){
+      if(i % 13 === 0 && i !== 0){
          j++;
          i = 0; 
       }

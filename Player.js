@@ -14,7 +14,7 @@
 /**
  * Player Object used in CardGame
  */
-var Player = function(name,isComp,isDealer){
+var Player = function(name,num,isComp,isDealer){
    this.dealer = false;
    this.hand = [];
    this.giveCards = [];
@@ -101,6 +101,18 @@ var Player = function(name,isComp,isDealer){
    playerInfo.appendChild(trickStatus);
    cardPlayer.appendChild(playerInfo);
 
+   // Config area display players
+   var displayPlayer = document.createElement("div");
+   displayPlayer.className = "displayPlayer";
+   var displayNumber = document.createElement("span");
+   displayNumber.className = "displayNumber";
+   displayNumber.innerHTML = num + ".";
+   var displayName = document.createElement("span");
+   displayName.className = "displayName";
+   displayName.innerHTML = name;
+   var displayType = document.createElement("span");
+   displayType.className = "displayType";
+
    if(!isComp){
       cardPlayer.className = "cardPlayer humanPlayer";
       cardPlayer.appendChild(handContainer);
@@ -109,15 +121,20 @@ var Player = function(name,isComp,isDealer){
       playButtons.appendChild(playerPlay);
       playButtons.appendChild(playerPass);
       cardPlayer.appendChild(playButtons);
+      displayType.innerHTML = "Human";
    }else{
       cardPlayer.className = "cardPlayer compPlayer";
       cardPlayer.appendChild(compContainer);
+      if(config.debug.mode){
+         cardPlayer.appendChild(handContainer);
+      }
+      displayType.innerHTML = "Computer";
    }
 
-   var displayName = document.createElement("div");
-   displayName.className = "displayPlayer";
-   displayName.innerHTML = name;
-   $("#nameContainer").append(displayName);
+   displayPlayer.appendChild(displayNumber);
+   displayPlayer.appendChild(displayName);
+   displayPlayer.appendChild(displayType);
+   $("#nameContainer").append(displayPlayer);
 }
 
 /**
