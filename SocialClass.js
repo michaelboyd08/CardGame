@@ -34,7 +34,7 @@ var initialize = function(){
    new CardGame();
    var isMobile = (/iPhone|iPod|iPad|Android|BlackBerry/).test(navigator.userAgent);
    if(isMobile){
-      alert("Mobile browser");
+      //alert("Mobile browser");
    }
 }
 
