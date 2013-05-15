@@ -593,7 +593,7 @@ CardGame.prototype.clearTrick = function(isPlayerTurn){
             for(var k = 0; k < this.players[j].hand.length; k++){
                if(config.debug.mode){
                   $(this.players[j].hand[k].node).off("click");
-                  $(this.players[j].hand[k].node).removeClass("playerCard");
+                  $(this.players[j].hand[k].node).removeClass("displayCard");
                   this.players[j].handContainer.removeChild(this.players[j].hand[k].node);
                }else{
                   console.log("remove card select");
@@ -601,7 +601,7 @@ CardGame.prototype.clearTrick = function(isPlayerTurn){
                   //console.log("card: "+this.players[j].hand[k].image);
                   $(this.players[j].hand[k].node).off("click");
                   if(!this.players[j].isComp){
-                     $(this.players[j].hand[k].node).removeClass("playerCard");
+                     $(this.players[j].hand[k].node).removeClass("displayCard");
                      this.players[j].handContainer.removeChild(this.players[j].hand[k].node);
                   }
                }
@@ -872,17 +872,16 @@ CardGame.prototype.playHand = function(player,cards,cardIdxs,isComp){
          player.trumpPlayed = true;
       }
 
-      // Turn off 'if statement' for debugging if comp cards displayed
       if(config.debug.mode){
          cards[i].node.parentNode.removeChild(cards[i].node);
          $(cards[i].node).removeClass("selectedCard");
+         $(cards[i].node).removeClass("displayCard");
          $(cards[i].node).off("click");
-         $(cards[i].node).removeClass("playerCard");
       }else{
          if(!isComp){
             cards[i].node.parentNode.removeChild(cards[i].node);
             $(cards[i].node).removeClass("selectedCard");
-            $(cards[i].node).removeClass("playerCard");
+            $(cards[i].node).removeClass("displayCard");
             $(cards[i].node).off("click");
             console.log("remove card select");
             console.log(cards[i].image);

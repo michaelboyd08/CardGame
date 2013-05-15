@@ -245,7 +245,7 @@ div.hand {
    -webkit-transform: translate3d(0px,0px,0px);
 }
 
-.playerCard:hover {
+.displayCard:hover {
    cursor: pointer;
 }
 

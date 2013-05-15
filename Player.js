@@ -197,7 +197,7 @@ Player.prototype.removeDisplayedCards = function(){
 Player.prototype.displayCards = function(){
    console.log("player displayed Cards: "+this.name.innerHTML);
    for(var i = 0; i < this.hand.length; i++){
-      $(this.hand[i].node).addClass("playerCard");
+      $(this.hand[i].node).addClass("displayCard");
       this.handContainer.appendChild(this.hand[i].node);
       this.attachCardSelect(this.hand[i]);
    }
