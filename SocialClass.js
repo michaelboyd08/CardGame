@@ -4,12 +4,7 @@
  * Social Class Card Game Application
  * This is a single player prototype of the card game Social Class.
  * The name of this game has many aliases including Scum, Kings, 
- * Presidents.
- *
- * 3/12/13 - Player can only play singles. More rules/expanded 
- *           functionality will come soon.
- * 
- * 4/23/13 - Player can play single, pairs, and quads.
+ * Presidents, and famously as Asshole.
  *
  */
 
@@ -56,20 +51,16 @@ var CardGame = function(){
    this.isGameStarted = false;
    this.isFirstGame = true;
    this.isFirstSwap = true;
+   this.dealerIndex = 0;
 
    this.startGameBtn = document.getElementById("startGameBtn");
    this.addPlayerBtn = document.getElementById("addPlayer");
    this.nextTrickBtn = document.getElementById("nextTrickBtn");
-   //this.swapCardsBtn = document.getElementById("swapCards");
-
-   //this.nextTrickBtn.disabled = true;
-   //this.swapCardsBtn.disabled = true;
 
    $("#nextTrickBtn").prop("disabled",true);
    $("#swapCardsBtn").prop("disabled",true);
 
    this.nextTrick = document.getElementById("nextTrick");
-   //$("#inputName").focus();
 
    // Start Game Button
    // Shuffles the deck 5 times, deals cards, and sorts players hands
@@ -86,11 +77,16 @@ var CardGame = function(){
          this_ptr.isGameStarted = true;
 
          // Hide initial dialog
+         // Move 'Start Game' button and 'Rules' to trick container
          if(this_ptr.isFirstGame){
             $("#ConfigArea").removeClass("Show");
             var startGameDiv = $("#startGame")[0].parentNode.removeChild($("#startGame")[0]);
             $(startGameDiv).addClass("buttons");
+            var rulesDiv = $("#OpenRules")[0].parentNode.removeChild($("#OpenRules")[0]);
+            $(rulesDiv).addClass("buttons");
+
             $("#gameButtons").append(startGameDiv);
+            $("#gameButtons").append(rulesDiv);
          }
 
          // Clear trick container
@@ -108,7 +104,7 @@ var CardGame = function(){
                this_ptr.shuffleCards();
             }
             // Deal out cards
-            this_ptr.dealCards();
+            this_ptr.dealCards(this_ptr.dealerIndex);
          }else{
             var cardValues1 = [7,7,7,9,14,15];
             var cardValues2 = [8,9,9,9,10,11];
@@ -210,11 +206,21 @@ var CardGame = function(){
       this_ptr.addPlayer(name);
    });
 
+   // Attach start trick button handler
    $(this.nextTrickBtn).click({context: this}, function(e){
       var this_ptr = e.data.context;
       this_ptr.startTrick();
    });
 
+   // Attach open rules pop up handler
+   $("#OpenRules").click(function(e){
+      $("#RulesContainer").addClass("Show");
+   });
+
+   // Attach close rules pop up handler
+   $("#CloseRules").click(function(e){
+      $("#RulesContainer").removeClass("Show");
+   });
 }
 
 CardGame.prototype.addPlayer = function(name){
@@ -243,7 +249,6 @@ CardGame.prototype.addPlayer = function(name){
 //
 // Reason: Want to have visibility on cards received 
 // and cards given away
-
 
 CardGame.prototype.handleSwap = function(){
    $("#UserButtons").addClass("cleared");
@@ -586,6 +591,8 @@ CardGame.prototype.clearTrick = function(isPlayerTurn){
    else{
       for(var j = 0; j < this.players.length; j++){
          if(this.players[j].result < 0){
+            // Scum is dealer for next round
+            //this.dealerIndex = j;
             this.players[j].result = this.results;
             this.players[j].trickStatus.innerHTML += " - "+this.players[j].result;
             $(this.players[j].trickStatus).addClass("Show");
@@ -946,15 +953,16 @@ CardGame.prototype.shuffleCards = function(){
  * Deal out cards to each player.
  * Begins with dealer
  */
-CardGame.prototype.dealCards = function(){
-   var j = 0;
+CardGame.prototype.dealCards = function(index){
    for(var i = 0; i < this.deck.cards.length; i++){
       // loop back around and deal
-      if(j === this.players.length){
-         j = 0;
+      if(index === this.players.length){
+         index = 0;
       }
-      this.players[j].hand.push(this.deck.cards[i]);
-      j++;
+      this.players[index].hand.push(this.deck.cards[i]);
+      console.log(this.players[index].name.innerHTML);
+      console.log(this.deck.cards[i].image);
+      index++;
    }
 }
 

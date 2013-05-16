@@ -30,6 +30,7 @@ var Player = function(name,num,isComp,isDealer){
    playerStatus.className = "status";
    var playerDealer = document.createElement("div");
    playerDealer.className = "dealer";
+   playerDealer.innerHTML = "D";
 
    var statusContainer = document.createElement("div");
    statusContainer.className = "infoContainer";
@@ -52,7 +53,6 @@ var Player = function(name,num,isComp,isDealer){
    }
    if(isDealer){
       $(playerDealer).addClass("Show");
-      playerDealer.innerHTML = "D";
       this.dealer = true;
    }
 

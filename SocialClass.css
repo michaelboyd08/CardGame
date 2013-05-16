@@ -3,7 +3,7 @@
  */
 
 body {
-   width: 100%;
+   width: 99%;
    height: 100%;
    cursor: default;
 }
@@ -56,7 +56,7 @@ input[type=button] {
 }
 
 #inputName {
-   width: 170px;
+   width: 125px;
 }
 
 #nameContainer {
@@ -79,6 +79,62 @@ input[type=button] {
 .displayName {
    width: 140px;
    margin-right: 10px;
+}
+
+.ruleLink {
+   color: #15C;
+   cursor: pointer;
+   text-decoration: none;
+}
+
+.ruleLink:hover {
+   text-decoration: underline;
+}
+
+#OpenRules {
+   display: inline-block;
+   vertical-align: middle;
+}
+
+#OpenRules.buttons {
+   margin-top: 6px;
+   margin-left: 5px;
+   display: block;
+}
+
+#CloseRules {
+   top: 0px;
+   right: 0px;
+   margin: 5px 20px 5px 5px;
+   position: absolute;
+}
+
+#RulesContainer {
+   top: 50px;
+   left: 18%;
+   z-index: 6;
+   display: none;
+   position: absolute;
+   border: 2px solid gray;
+   border-radius: 5px;
+   background-color: white;
+}
+
+#RulesContainer.Show {
+   display: block;
+}
+
+#RulesContainer p,li {
+   font-size: 14px;
+   font-weight: normal;
+   font-family: sans-serif;
+}
+
+#RulesDesc {
+   width: 625px;
+   height: 350px;
+   padding: 0px 35px 10px 12px;
+   overflow-y : scroll;
 }
 
 #GameContainer {
@@ -197,7 +253,11 @@ div.infoTurnContainer {
    display: block;
 }
 
-.dealer.Show {
+div.dealer {
+   display: none;
+}
+
+div.dealer.Show {
    width: 20px;
    border-radius: 5px;
    text-align: center;
@@ -313,6 +373,7 @@ div.playerTrickStatus.Show {
 #startGame.buttons {
    margin-top: 6px;
    margin-left: 2px;
+   display: block;
 }
 
 #startGame.highLight {
