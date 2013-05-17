@@ -14,8 +14,7 @@
 /**
  * Player Object used in CardGame
  */
-var Player = function(name,num,isComp,isDealer){
-   this.dealer = false;
+var Player = function(name,num,isComp){
    this.hand = [];
    this.giveCards = [];
    this.giveCardsIdxs = [];
@@ -51,10 +50,12 @@ var Player = function(name,num,isComp,isDealer){
       this.play = playerPlay;
       this.pass = playerPass;
    }
+   /*
    if(isDealer){
       $(playerDealer).addClass("Show");
       this.dealer = true;
    }
+   */
 
    var currentTurn = document.createElement("div");
    currentTurn.className = "currentTurn";
@@ -82,7 +83,7 @@ var Player = function(name,num,isComp,isDealer){
    this.info = playerInfo;
    this.name = playerName;
    this.status = playerStatus;
-   this.deal = playerDealer;
+   this.dealer = playerDealer;
    this.isComp = isComp;
    this.handContainer = handContainer;
    this.compContainer = compContainer;
@@ -94,6 +95,7 @@ var Player = function(name,num,isComp,isDealer){
    this.passHand = false;
    this.result = -1;
    this.trumpPlayed = false;
+   this.isDealer = false;
 
    playerInfo.appendChild(playerName);
    playerInfo.appendChild(statusContainer);

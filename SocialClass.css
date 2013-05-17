@@ -92,13 +92,13 @@ input[type=button] {
 }
 
 #OpenRules {
+   margin-left: 5px;
    display: inline-block;
    vertical-align: middle;
 }
 
 #OpenRules.buttons {
-   margin-top: 6px;
-   margin-left: 5px;
+   margin-top: 15px;
    display: block;
 }
 

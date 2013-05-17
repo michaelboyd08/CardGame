@@ -23,6 +23,7 @@ var config = {
       scum: "S"
    },
    delay: 1500,
+   startDelay: 5000,
 };
 
 var initialize = function(){
@@ -104,6 +105,7 @@ var CardGame = function(){
                this_ptr.shuffleCards();
             }
             // Deal out cards
+            this_ptr.dealerIndex = this_ptr.getDealer();
             this_ptr.dealCards(this_ptr.dealerIndex);
          }else{
             var cardValues1 = [7,7,7,9,14,15];
@@ -223,16 +225,43 @@ var CardGame = function(){
    });
 }
 
+CardGame.prototype.getDealer = function(){
+   var index = 0;
+   if(this.isFirstGame){
+      var min = 0;
+      var max = this.players.length-1;
+      index = Math.floor(Math.random() * (max - min + 1) + min);
+   }else{
+      for(var i = 0; i < this.players.length; i++){
+         // Make Scum dealer for current round
+         if(this.players[i].result === this.players.length){
+            index = i;
+            // Remove previous dealer dislay
+            this.players[this.dealerIndex].isDealer = false;
+            $(this.players[this.dealerIndex].dealer).removeClass("Show");
+            break;
+         }
+      }
+   }
+   console.log("seed dealer index: "+index);
+
+   // Display current dealer status
+   this.players[index].isDealer = true;
+   $(this.players[index].dealer).addClass("Show");
+
+   return index;
+}
+
 CardGame.prototype.addPlayer = function(name){
    if(name !== "" && !this.isGameStarted){
       // First Player entered is Human
       if(this.players.length === 0){
-         this.players.push(new Player(name,(this.players.length+1),false,true));
+         this.players.push(new Player(name,(this.players.length+1),false));
          $("#inputName").prop("placeholder","Enter Computer Players");
       }
       // Computer Players entered
       else{
-         this.players.push(new Player(name,(this.players.length+1),true,false));
+         this.players.push(new Player(name,(this.players.length+1),true));
       }
    }
    $("#inputName").val("");
@@ -474,17 +503,24 @@ CardGame.prototype.startGame = function(){
    $("#TrickContainer").addClass("Show");
    $("#nextTrick").addClass("Show");
    $("#swapCards").addClass("Show");
+   console.log("Start Game");
    for(var i = 0; i < this.players.length; i++){
+      console.log("player: "+i);
       this.players[i].playedCard = false;
       this.players[i].passHand = false;
       this.players[i].result = -1;
       if(!this.players[i].isComp){
          $(this.players[i].play).addClass("Show");
          $(this.players[i].pass).addClass("Show");
-         $(this.players[i].turn).addClass("Show");
-
-         this.players[i].play.disabled = false;
+         this.players[i].play.disabled = true;
          this.players[i].pass.disabled = true;
+
+         console.log("human player");
+         if(this.players[i].isDealer){
+            $(this.players[i].turn).addClass("Show");
+            this.players[i].play.disabled = false;
+            this.players[i].pass.disabled = true;
+         }
          // Play card in trick
          if(this.isFirstGame){
             console.log("Play and Pass Attached");
@@ -523,23 +559,44 @@ CardGame.prototype.startGame = function(){
             this.isFirstGame = false;
          }
       }
+      else{
+         console.log("comp player");
+         // Start play with comp dealer
+         if(this.players[i].isDealer){
+            console.log("dealer player");
+            var cards = [];
+            this.cardTrick.rule = "Singles";
+            cards.push(this.players[i].hand[0]);
+            this.cardTrick.setValues(cards,this.players[i]);
+            $(this.players[i].turn).addClass("Show");
+            this.setUpAutoStart(i);
+         }
+      }
    }
+}
+
+CardGame.prototype.setUpAutoStart = function(index){
+   setTimeout(this.automatePlay,config.startDelay,index,false,this);
 }
 
 /**
  * Automates play for computer players
  */
-CardGame.prototype.automatePlay = function(index,isPassed){
+CardGame.prototype.automatePlay = function(index,isPassed,context){
+   var this_ptr = this;
    var factor = 1;
    var timeDelay = config.delay;
-   $(this.players[index].turn).addClass("Show");
-   for(var i = index; i < this.players.length; i++){
-      this.setAutoPlayTimer(i,factor++,timeDelay);
+   if(context != undefined){
+      this_ptr = context;
+   }
+   $(this_ptr.players[index].turn).addClass("Show");
+   for(var i = index; i < this_ptr.players.length; i++){
+      this_ptr.setAutoPlayTimer(i,factor++,timeDelay);
    }
 
    var delay = ((factor-1)*timeDelay)+500;
    //console.log("delay: "+delay);
-   this.controlId = setTimeout(this.resumePlay,delay,this,isPassed);
+   this_ptr.controlId = setTimeout(this_ptr.resumePlay,delay,this_ptr,isPassed);
 }
 
 /**
@@ -591,8 +648,6 @@ CardGame.prototype.clearTrick = function(isPlayerTurn){
    else{
       for(var j = 0; j < this.players.length; j++){
          if(this.players[j].result < 0){
-            // Scum is dealer for next round
-            //this.dealerIndex = j;
             this.players[j].result = this.results;
             this.players[j].trickStatus.innerHTML += " - "+this.players[j].result;
             $(this.players[j].trickStatus).addClass("Show");
@@ -805,6 +860,11 @@ CardGame.prototype.compPlayCardsInTrick = function(player){
             console.log("prevent index out of bounds break");
             break;
          }else{
+            if(config.debug.mode){
+               if($(player.hand[i].node).hasClass("swappedCard")){
+                  $(player.hand[i].node).removeClass("swappedCard");
+               }
+            }
             // Push player hand onto cards array
             for(var j = 0; j < this.cardTrick.hand.length; j++){
                if(cards.length < this.cardTrick.hand.length){
