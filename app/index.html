@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <link rel="stylesheet" href="css/social_class.css?00000000000000">
+      <title>Social Class - Card Game</title>
+   </head>
+   <body>
+      <div id="Container">
+         <div id="ConfigArea" class="Show">
+            <div id="GameTitle">Social Class Card Game</div>
+            <div id="UserButtons">
+               <span>Player Name: </span>
+               <input id="inputName" type="text" autofocus="true" placeholder="Enter Your Name"/>
+               <input id="addPlayer" type="button" value="Add Player" />
+               <div id="startGame" class="ShowLine">
+                  <input id="startGameBtn" type="button" value="Start Game" />
+               </div>
+               <div id="OpenRules" class="ruleLink">Rules</div>
+               <div id="nameContainer"></div>
+            </div>
+         </div>
+         <div id="RulesContainer">
+            <div id="CloseRules" class="ruleLink">Close</div>
+            <div id="RulesDesc">
+               <h1>
+                  <span>Social Class Card Game Rules</span>
+               </h1>
+               <h2>
+                  <span>General</span>
+                  <p>Famously know as Asshole, Kings, Presidents or Scum, players attempt to get rid of their cards first. The cards rank from 3 &ndash; 10, Jack, Queen, King, Ace, 2
+                  </p>
+               </h2>
+               <h2>
+                  <span>Title Placings</span>
+                  <ul>
+                     <li>
+                        <b>President (P)</b> &ndash; winner of the previous round
+                     </li>
+                     <li>
+                        <b>Vice President (VP)</b> &ndash; second place
+                     </li>
+                     <li>
+                        <b>Vice Scum (VS)</b> &ndash; second to last place
+                     </li>
+                     <li>
+                        <b>Scum (S)</b> &ndash; last place
+                     </li>
+                  </ul>
+               </h2>
+               <h2>
+                  <span>Types of Playable Hands</span>
+                  <ul>
+                     <li>
+                        <b>Singles</b> &ndash; a card that is played alone
+                     </li>
+                     <li>
+                        <b>Pairs</b> &ndash; two cards of the same value (Ex. Two 7s)
+                     </li>
+                     <li>
+                        <b>Trips</b> &ndash; three cards of the same value (Ex. Three 8s)
+                     </li>
+                     <li>
+                        <b>Quads</b> &ndash; four cards of the same value (Ex. Four 10s)
+                     </li>
+                     <li>
+                        <b>Trump Card</b> &ndash; one 2 card can beat (trump) any type of play (Ex. One 2 can beat a pair of Aces)
+                     </li>
+                  </ul>
+               </h2>
+               <h2>
+                  <span>How to Play</span>
+               </h2>
+               <h3>
+                  <span>Dealing</span>
+                  <p>At the beginning of the round, the dealer is chosen at random and the entire deck is dealt out. If there were titles assigned to each player from the previous round, Scum is the dealer.
+                  </p>
+               </h3>
+               <h3>
+                  <span>Card Swapping</span>
+                  <p>After the cards are dealt, the Scum must hand over their two strongest (highest) cards to the President, while the Vice Scum must hand over their one strongest card to the Vice President. The President and Vice President hand back an equal number of any &quot;junk&quot; cards they do not want. President gives back two and Vice President gives back one.
+                  </p>
+               </h3>
+               <h3>
+                  <span>Playing</span>
+                  <ol>
+                     <li>Play in Social Class is organized into &quot;Tricks&quot; similar to Spades or Bridge. However, each trick can involve more than one card played by each player, and players do not have to play a card in a trick.
+                     </li>
+                     <li>Play begins with the dealer player choosing a playable hand to play (Singles, Pairs, Trips, Quads). The Player must click the card image(s) to highlight the selected card(s) with a green background. Once desired cards have been selected, click the &quot;Play&quot; button to play your cards.
+                     </li>
+                     <li>The first hand played in a trick establishes the trick rule (ex. Singles, Pairs. Etc). Only hands following the trick rule may be played on top of it.
+                     </li>
+                     <li>Play proceeds in a clockwise direction. The player to the left must play a card(s) at least one value greater than the card(s) last played in the trick. Or the player can choose to &quot;Pass&quot; and not play again until the next trick. Players can pass anytime, even if the player has cards that could be played.
+                     </li>
+                     <li>This play continues until all players have passed or a 2 card (trump) has been played. This clears the trick and the person who did not pass or who played trump begins the next trick.
+                     </li>
+                     <li>Once a player runs out of cards, that player is out of play for the rest of the round. The trick gets cleared immediately and play resumes with the next player to the left who still has cards in their hand.
+                     </li>
+                  </ol>
+               </h3>
+            </div>
+         </div>
+         <div id="GameContainer">
+            <div id="PlayersContainer" class="ShowLine"></div>
+            <div id="TrickContainer">
+               <div id="trickHeader">
+                  <div id="trickLabel" class="ShowLine">Trick Rule</div>
+                  <div id="trickClear" class="ShowLine"></div>
+               </div>
+               <div id="trickCards"></div>
+               <div id="gameButtons">
+                  <div id="nextTrick">
+                     <input id="nextTrickBtn" type="button" value="Next Trick" />
+                  </div>
+                  <div id="swapCards">
+                     <input id="swapCardsBtn" type="button" value="Swap Cards" />
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-41887803-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+      </script>
+      <script src="src/require_config.js?00000000000000"></script>
+      <script data-main="src/main.js" src="libs/requirejs/require.js?00000000000000"></script>
+   </body>
+</html>
+
