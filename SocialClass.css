@@ -23,10 +23,12 @@ input[type=button] {
 }
 
 #ConfigArea {
-   top: 150px;
-   left: 28%;
-   width: 465px;
+   top: 50%;
+   left: 50%;
+   width: 470px;
    z-index: 5;
+   margin-top: -150px;
+   margin-left: -235px;
    display: none;
    position: absolute;
    border: 2px solid black;
@@ -402,7 +404,7 @@ div.playerTrickStatus.Show {
 
 .highLight {
    border: 2px solid green;
-   border-radius: 3px;  
+   border-radius: 3px;
 }
 
 #swapCards {
