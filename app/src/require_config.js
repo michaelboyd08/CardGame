@@ -3,6 +3,7 @@ var require = {
     paths: {
         'text': '../libs/requirejs/text',
         'jquery': '../libs/jquery/jquery-1.11.1',
+        'bootstrap': '../libs/bootstrap/bootstrap',
         /*'jqueryui': '../libs/jqueryui/jquery-ui-1.10.4.custom',*/
         'underscore': '../libs/lodash/underscore.amd',
         'backbone': '../libs/backbone/backbone',
@@ -13,6 +14,10 @@ var require = {
     shim: {
         handlebars: {
             exports: 'Handlebars'
+        },
+        bootstrap: {
+            deps: ['jquery'],
+            exports: '$.fn.popover'
         },
         backbone: {
             deps: ['underscore', 'jquery'],
