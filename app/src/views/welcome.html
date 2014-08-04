@@ -1,7 +1,14 @@
-<div class="container">
+<div class="welcome-container container">
     <h1>Social Class</h1>
     <h2>A card game similar to Kings, Presidents, or Scum, where players attempt to get rid of their cards first</h2>
     <p id="play-now-container">
-       <button type="button" class="play-now-btn btn btn-primary btn-lg">Play Now</button>
+        {{#if isMobile}}<span class="mobile-flip">(flip horizontally for best results)</span>{{/if}}
+        <button type="button" class="play-now-btn btn btn-primary btn-lg">Play Now</button>
+    </p>
+</div>
+<div class="name-container" style="display: none">
+    <p id="name-input-container">
+        <input type="text" class="enter-name-input form-control" value="Guest" placeholder="Enter Name">
+        <button type="button" class="start-game-btn btn btn-primary">Start Game</button>
     </p>
 </div>

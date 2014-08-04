@@ -5,7 +5,6 @@
 html, body {
    height: 100%;
    width: 100%;
-   overflow: hidden;
    -webkit-user-select: none;
 }
 body {
@@ -17,15 +16,40 @@ body {
    color: #fff;
 }
 
-.jumbotron {
-   height: 100%;
-}
-
 #play-now-container {
    text-align: center;
-   margin-top: 80px;
+   margin-top: 40px;
 }
 
 .play-now-btn {
    padding: 15px 40px;
+}
+
+.mobile-flip {
+   display: block;
+   padding-bottom: 10px;
+}
+
+.name-container {
+   top: 50%;
+   left: 50%;
+   width: 370px;
+   height: 40px;
+   margin-top: -20px;
+   margin-left: -185px;
+   position: absolute;
+}
+
+#name-input-container {
+   margin-bottom: 0px;
+   text-align: center;
+}
+
+.enter-name-input {
+   width: 175px;
+   display: inline-block;
+}
+
+.start-game-btn {
+   margin-left: 10px;
 }

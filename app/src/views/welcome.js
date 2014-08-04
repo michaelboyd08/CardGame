@@ -1,7 +1,7 @@
-define(['jquery', 'underscore', 'marionette', 'handlebars', 'text!views/welcome.html'],
-    function($, _, Backbone, Handlebars, welcomeHTML) {
+define(['jquery', 'underscore', 'backbone', 'marionette', 'handlebars', 'text!views/welcome.html'],
+    function($, _, Backbone, Marionette, Handlebars, welcomeHTML) {
 
-    var welcomeCompositeView = Backbone.ItemView.extend({
+    var welcomeCompositeView = Backbone.Marionette.ItemView.extend({
 
         el: '#welcome-screen',
         itemViewContainer: '.',
@@ -13,6 +13,13 @@ define(['jquery', 'underscore', 'marionette', 'handlebars', 'text!views/welcome.
         callback: undefined,
 
         initialize: function(options) {
+
+            var isMobile;
+
+            isMobile = (/iPhone|iPod|iPad|Android|BlackBerry/).test(navigator.userAgent);
+            if (isMobile) {
+                this.model = new Backbone.Model({isMobile: true});
+            }
 
             if (options && options.callback) {
 
@@ -29,7 +36,8 @@ define(['jquery', 'underscore', 'marionette', 'handlebars', 'text!views/welcome.
                 this.callback();
             }
 
-            this.$el.hide();
+            this.$el.find('.welcome-container').hide();
+            this.$el.find('.name-container').show();
         }
     });
 
