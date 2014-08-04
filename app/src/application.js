@@ -8,7 +8,7 @@ define(['marionette', 'controllers/social_class'],
 
         var app;
 
-        app = new Backbone.Marionette.Application();
+        app = new Backbone.Application();
 
         function initControllers() {
 
