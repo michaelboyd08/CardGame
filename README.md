@@ -1,7 +1,7 @@
 # Social Class Card Game Rules
 ## General
 
-Famously know as Asshole, Kings, Presidents or Scum, players attempt to get rid of their cards first. The cards rank from 3 - 10, Jack, Queen, King, Ace, 2
+Famously known as Asshole, Kings, Presidents or Scum, players attempt to get rid of their cards first. The cards rank from 3 - 10, Jack, Queen, King, Ace, 2
 
 ## Title Placings
 
